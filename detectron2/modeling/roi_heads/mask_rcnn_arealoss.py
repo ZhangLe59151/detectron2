@@ -319,17 +319,6 @@ class FastRCNNOutputs:
         gt_proposal_deltas = self.box2box_transform.get_deltas_area(
                 self.proposals.tensor, self.gt_boxes.tensor
             )
-        pdb.set_trace()
-        '''
-        loss_box_area_reg = smooth_l1_loss(
-                self.pred_proposal_deltas[fg_inds[:, None], gt_class_cols],
-                gt_proposal_deltas[fg_inds],
-                self.smooth_l1_beta,
-                reduction="sum",
-            )
-        loss_box_area_reg = loss_box_area_reg / self.gt_classes.numel()
-        pdb.set_trace()
-        '''
         return gt_proposal_deltas
 
     def _predict_boxes(self):
