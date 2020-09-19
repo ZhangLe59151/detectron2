@@ -330,7 +330,7 @@ class FastRCNNOutputs:
         loss_box_area_reg = loss_box_area_reg / self.gt_classes.numel()
         pdb.set_trace()
         '''
-        return F.cross_entropy(self.pred_class_logits, self.gt_classes, reduction="mean")
+        return gt_proposal_deltas
 
     def _predict_boxes(self):
         """
