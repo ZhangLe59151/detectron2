@@ -90,7 +90,7 @@ class Box2BoxTransform(object):
         target_area = target_widths * target_heights / (4192 * 3584)
         delta_area = (target_area - source_area) 
         deltas = torch.stack((delta_area, delta_area, delta_area, delta_area), dim=1)
-        a ,b, c, d = target_width.split([64,64,64,64], dim=0)
+        a ,b, c, d = target_widths.split([64,64,64,64], dim=0)
         print('a: ', a)
         print('b :', b)
         print('c :', c)
