@@ -303,7 +303,8 @@ class FastRCNNOutputs:
     # my loss
     def my_loss(self):
         # return
-        return 0
+        pdb.set_trace()
+        return self.pred_class_logits.sum()
 
     def _predict_boxes(self):
         """
@@ -327,8 +328,6 @@ class FastRCNNOutputs:
         Returns:
             A dict of losses (scalar tensors) containing keys "loss_cls" and "loss_box_reg".
         """
-        pdb.set_trace()
-        print({"loss_cls": self.softmax_cross_entropy_loss(), "loss_box_reg": self.box_reg_loss(), "loss_my_loss": self.my_loss()})
         pdb.set_trace()
         return {"loss_cls": self.softmax_cross_entropy_loss(), "loss_box_reg": self.box_reg_loss(), "loss_my_loss": self.my_loss()}
 
