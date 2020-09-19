@@ -245,8 +245,6 @@ class FastRCNNOutputs:
             return 0.0 * self.pred_proposal_deltas.sum()
 
         box_dim = self.gt_boxes.tensor.size(1)  # 4 or 5
-        print(self.gt_boxes.tensor.size(1))
-        print(self.gt_boxes.tensor.size(0))
         cls_agnostic_bbox_reg = self.pred_proposal_deltas.size(1) == box_dim
         device = self.pred_proposal_deltas.device
 
@@ -426,7 +424,6 @@ class AMaskRCNNOutputLayers(nn.Module):
         super().__init__()
         if isinstance(input_shape, int):  # some backward compatibility
             input_shape = ShapeSpec(channels=input_shape)
-            print(input_shape)
         input_size = input_shape.channels * (input_shape.width or 1) * (input_shape.height or 1)
         # prediction layer for num_classes foreground classes and one background class (hence + 1)
         self.cls_score = Linear(input_size, num_classes + 1)
