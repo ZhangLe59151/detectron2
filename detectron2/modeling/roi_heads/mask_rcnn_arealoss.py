@@ -16,6 +16,7 @@ from detectron2.structures import Boxes, Instances
 from detectron2.utils.events import get_event_storage
 import pdb
 
+
 __all__ = ["fast_rcnn_inference", "AMaskRCNNOutputLayers"]
 
 
@@ -304,6 +305,7 @@ class FastRCNNOutputs:
     def my_loss(self):
         # return
         pdb.set_trace()
+        print(self.gt_boxes.tensor)
         return self.pred_class_logits.sum()
 
     def _predict_boxes(self):
