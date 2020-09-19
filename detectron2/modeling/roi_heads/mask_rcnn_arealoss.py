@@ -140,6 +140,7 @@ class FastRCNNOutputs:
     """
 
     def __init__(
+        input_shape,
         self,
         box2box_transform,
         pred_class_logits,
@@ -147,7 +148,6 @@ class FastRCNNOutputs:
         proposals,
         smooth_l1_beta=0.0,
         box_reg_loss_type="smooth_l1",
-        input_shape,
     ):
         """
         Args:
