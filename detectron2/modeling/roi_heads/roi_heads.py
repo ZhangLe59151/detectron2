@@ -590,6 +590,7 @@ class StandardROIHeads(ROIHeads):
             cfg, ShapeSpec(channels=in_channels, height=pooler_resolution, width=pooler_resolution)
         )
         # add debug
+        print(input_shape)
         box_predictor = AMaskRCNNOutputLayers(cfg, box_head.output_shape)
         return {
             "box_in_features": in_features,
