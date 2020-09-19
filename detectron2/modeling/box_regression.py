@@ -88,8 +88,9 @@ class Box2BoxTransform(object):
         #caluate source area
         source_area = src_widths * src_heights
         target_area = target_widths * target_heights
-        delta_area = target_area - source_area
+        delta_area = (target_area - source_area) / 10000
         deltas = torch.stack((delta_area, delta_area, delta_area, delta_area), dim=1)
+        print(deltas)
         # print('dealta_area', delta_area)
         assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
         return deltas
