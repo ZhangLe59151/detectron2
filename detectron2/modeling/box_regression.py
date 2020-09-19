@@ -87,7 +87,7 @@ class Box2BoxTransform(object):
         target_area = target_widths * target_heights
         delta_a = target_area - source_area
         #set delta
-        deltas_area = torch.stack(delta_a, dim=1)
+        deltas_area = torch.stack((delta_a), dim=1)
         pdb.set_trace()
         assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
         return deltas_area
