@@ -11,6 +11,7 @@ from detectron2.layers import Linear, ShapeSpec, batched_nms, cat, nonzero_tuple
 from detectron2.modeling.box_regression import Box2BoxTransform
 from detectron2.structures import Boxes, Instances
 from detectron2.utils.events import get_event_storage
+import import pdb
 
 __all__ = ["fast_rcnn_inference", "FastRCNNOutputLayers"]
 
@@ -323,6 +324,7 @@ class FastRCNNOutputs:
         Returns:
             A dict of losses (scalar tensors) containing keys "loss_cls" and "loss_box_reg".
         """
+        pdb.set_trace()
         return {"loss_cls": self.softmax_cross_entropy_loss(), "loss_box_reg": self.box_reg_loss()}
 
     def predict_boxes(self):
@@ -474,6 +476,7 @@ class FastRCNNOutputLayers(nn.Module):
             self.smooth_l1_beta,
             self.box_reg_loss_type,
         ).losses()
+        
         return {k: v * self.loss_weight.get(k, 1.0) for k, v in losses.items()}
 
     def inference(self, predictions, proposals):
