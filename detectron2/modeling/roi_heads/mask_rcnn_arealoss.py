@@ -326,6 +326,7 @@ class FastRCNNOutputs:
                 reduction="sum",
             )
         loss_box_area_reg = loss_box_area_reg / self.gt_classes.numel()
+        print(self.input_shape)
         return loss_box_area_reg
 
     def _predict_boxes(self):
