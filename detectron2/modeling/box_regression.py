@@ -85,7 +85,6 @@ class Box2BoxTransform(object):
         #get target weight height
         target_widths = target_boxes[:, 2] - target_boxes[:, 0]
         target_heights = target_boxes[:, 3] - target_boxes[:, 1]
-        print(target_widths)
         #caluate source area
         source_area = src_widths * src_heights / (4192 * 3584)
         target_area = target_widths * target_heights / (4192 * 3584)
