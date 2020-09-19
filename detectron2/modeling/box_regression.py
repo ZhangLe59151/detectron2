@@ -69,11 +69,11 @@ class Box2BoxTransform(object):
         dw = ww * torch.log(target_widths / src_widths)
         dh = wh * torch.log(target_heights / src_heights)
         print((dx, dy, dw, dh))
-        
+
         deltas = torch.stack((dx, dy, dw, dh), dim=1)
         assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
         return deltas
-
+'''
     def get_deltas_area(self, src_boxes, target_boxes):
         assert isinstance(src_boxes, torch.Tensor), type(src_boxes)
         assert isinstance(target_boxes, torch.Tensor), type(target_boxes)
@@ -92,7 +92,7 @@ class Box2BoxTransform(object):
         pdb.set_trace()
         assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
         return deltas_area
-
+'''
     def apply_deltas(self, deltas, boxes):
         """
         Apply transformation `deltas` (dx, dy, dw, dh) to `boxes`.
