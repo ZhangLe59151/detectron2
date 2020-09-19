@@ -246,7 +246,7 @@ class FastRCNNOutputs:
 
         box_dim = self.gt_boxes.tensor.size(1)  # 4 or 5
         print(self.gt_boxes.tensor.size(1))
-        print(self.gt_boxes.tensor.size(2))
+        print(self.gt_boxes.tensor.size(0))
         cls_agnostic_bbox_reg = self.pred_proposal_deltas.size(1) == box_dim
         device = self.pred_proposal_deltas.device
 
