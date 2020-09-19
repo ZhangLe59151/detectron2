@@ -91,7 +91,7 @@ class Box2BoxTransform(object):
         delta_area = target_area - source_area
         print('dealta_area', delta_area)
         assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
-        return deltas_area
+        return delta_area
 
     def apply_deltas(self, deltas, boxes):
         """
