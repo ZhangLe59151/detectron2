@@ -326,7 +326,6 @@ class FastRCNNOutputs:
                 reduction="sum",
             )
         loss_box_area_reg = loss_box_area_reg / self.gt_classes.numel()
-        print(self.input_shape)
         return loss_box_area_reg
 
     def _predict_boxes(self):
@@ -503,6 +502,7 @@ class AMaskRCNNOutputLayers(nn.Module):
             proposals,
             self.smooth_l1_beta,
             self.box_reg_loss_type,
+            self.input_Shape
         ).losses()
         #debug
         #pdb.set_trace()
