@@ -92,7 +92,6 @@ class Box2BoxTransform(object):
         pdb.set_trace()
         assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
         return deltas_area
-    '''
 
     def apply_deltas(self, deltas, boxes):
         """
