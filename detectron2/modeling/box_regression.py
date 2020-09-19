@@ -92,6 +92,7 @@ class Box2BoxTransform(object):
         deltas = torch.stack((delta_area, delta_area, delta_area, delta_area), dim=1)
         # get target x
         target_x = target_boxes[:, 0]
+        target_y = target_boxes[:, 1]
         tar_x_1 ,tar_x_2, tar_x_3, tar_x_4 = target_x.split([64,64,64,64], dim=0)
         tar_y_1 ,tar_y_2, tar_y_3, tar_y_4 = target_y.split([64,64,64,64], dim=0)
         print('tar_x_1 :', tar_x_1)
