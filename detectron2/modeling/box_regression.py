@@ -69,10 +69,11 @@ class Box2BoxTransform(object):
         dw = ww * torch.log(target_widths / src_widths)
         dh = wh * torch.log(target_heights / src_heights)
 
-        pdb.set_trace()
+        
         deltas = torch.stack((dx, dy, dw, dh), dim=1)
-
         assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
+        
+        pdb.set_trace()
         return deltas
     '''
     def get_deltas_area(self, src_boxes, target_boxes):
