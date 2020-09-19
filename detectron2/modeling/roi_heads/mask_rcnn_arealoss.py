@@ -141,7 +141,6 @@ class FastRCNNOutputs:
 
     def __init__(
         self,
-        input_shape,
         box2box_transform,
         pred_class_logits,
         pred_proposal_deltas,
@@ -425,6 +424,7 @@ class AMaskRCNNOutputLayers(nn.Module):
         super().__init__()
         if isinstance(input_shape, int):  # some backward compatibility
             input_shape = ShapeSpec(channels=input_shape)
+            print(input_shape)
         input_size = input_shape.channels * (input_shape.width or 1) * (input_shape.height or 1)
         # prediction layer for num_classes foreground classes and one background class (hence + 1)
         self.cls_score = Linear(input_size, num_classes + 1)
@@ -503,7 +503,6 @@ class AMaskRCNNOutputLayers(nn.Module):
             proposals,
             self.smooth_l1_beta,
             self.box_reg_loss_type,
-            self.input_shape
         ).losses()
         #debug
         #pdb.set_trace()
