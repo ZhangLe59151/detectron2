@@ -86,9 +86,9 @@ class Box2BoxTransform(object):
         target_widths = target_boxes[:, 2] - target_boxes[:, 0]
         target_heights = target_boxes[:, 3] - target_boxes[:, 1]
         #caluate source area
-        source_area = src_widths * src_heights
-        target_area = target_widths * target_heights
-        delta_area = (target_area - source_area) / 10000
+        source_area = src_widths * src_heights / (4192 * 3584)
+        target_area = target_widths * target_heights / (4192 * 3584)
+        delta_area = (target_area - source_area) 
         deltas = torch.stack((delta_area, delta_area, delta_area, delta_area), dim=1)
         print(deltas)
         # print('dealta_area', delta_area)
