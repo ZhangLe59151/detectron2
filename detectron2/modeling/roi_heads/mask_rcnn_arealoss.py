@@ -351,7 +351,7 @@ class FastRCNNOutputs:
         """
         #debug
         # pdb.set_trace()
-        return {"loss_cls": self.softmax_cross_entropy_loss(), "loss_box_reg": self.box_reg_loss(), "loss_my_loss": self.my_loss()}
+        return {"loss_cls": self.softmax_cross_entropy_loss(), "loss_box_reg": self.box_reg_loss(), "my_loss": self.my_loss()}
 
     def predict_boxes(self):
         """
@@ -442,7 +442,7 @@ class AMaskRCNNOutputLayers(nn.Module):
         self.test_topk_per_image = test_topk_per_image
         self.box_reg_loss_type = box_reg_loss_type
         if isinstance(loss_weight, float):
-            loss_weight = {"loss_cls": loss_weight, "loss_box_reg": loss_weight}
+            loss_weight = {"loss_cls": loss_weight, "loss_box_reg": loss_weight, "my_loss": loss_weight}
         self.loss_weight = loss_weight
 
     @classmethod
