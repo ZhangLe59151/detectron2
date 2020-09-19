@@ -502,7 +502,7 @@ class AMaskRCNNOutputLayers(nn.Module):
             proposals,
             self.smooth_l1_beta,
             self.box_reg_loss_type,
-            self.input_Shape
+            self.input_shape
         ).losses()
         #debug
         #pdb.set_trace()
