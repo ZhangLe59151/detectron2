@@ -140,8 +140,8 @@ class FastRCNNOutputs:
     """
 
     def __init__(
-        input_shape,
         self,
+        input_shape,
         box2box_transform,
         pred_class_logits,
         pred_proposal_deltas,
@@ -503,7 +503,7 @@ class AMaskRCNNOutputLayers(nn.Module):
             proposals,
             self.smooth_l1_beta,
             self.box_reg_loss_type,
-            input_shape
+            self.input_shape
         ).losses()
         #debug
         #pdb.set_trace()
