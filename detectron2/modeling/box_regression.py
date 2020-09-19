@@ -90,7 +90,7 @@ class Box2BoxTransform(object):
         target_area = target_widths * target_heights / (4192 * 3584)
         delta_area = (target_area - source_area) 
         deltas = torch.stack((delta_area, delta_area, delta_area, delta_area), dim=1)
-        print(target_widths.shape)
+        print(target_widths)
         # print('dealta_area', delta_area)
         assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
         return deltas
