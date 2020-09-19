@@ -272,6 +272,7 @@ class FastRCNNOutputs:
             gt_proposal_deltas = self.box2box_transform.get_deltas(
                 self.proposals.tensor, self.gt_boxes.tensor
             )
+            pdb.set_trace()
             loss_box_reg = smooth_l1_loss(
                 self.pred_proposal_deltas[fg_inds[:, None], gt_class_cols],
                 gt_proposal_deltas[fg_inds],
@@ -303,10 +304,31 @@ class FastRCNNOutputs:
 
     # my loss
     def my_loss(self):
-        # return
+        # return debug 
+        if self._no_instances:
+            return 0.0 * self.pred_proposal_deltas.sum()
+        box_dim = self.gt_boxes.tensor.size(1)  # 4 or 5
+        cls_agnostic_bbox_reg = self.pred_proposal_deltas.size(1) == box_dim
+        device = self.pred_proposal_deltas.device
+        bg_class_ind = self.pred_class_logits.shape[1] - 1
+        fg_inds = nonzero_tuple((self.gt_classes >= 0) & (self.gt_classes < bg_class_ind))[0]
+        if cls_agnostic_bbox_reg:
+            gt_class_cols = torch.arange(box_dim, device=device)
+        else:
+            fg_gt_classes = self.gt_classes[fg_inds]
+            gt_class_cols = box_dim * fg_gt_classes[:, None] + torch.arange(box_dim, device=device)
+        gt_proposal_deltas = self.box2box_transform.get_deltas_area(
+                self.proposals.tensor, self.gt_boxes.tensor
+            )
         pdb.set_trace()
-        print(self.gt_boxes.tensor)
-        return self.pred_class_logits.sum()
+        loss_box_area_reg = smooth_l1_loss(
+                self.pred_proposal_deltas[fg_inds[:, None], gt_class_cols],
+                gt_proposal_deltas[fg_inds],
+                self.smooth_l1_beta,
+                reduction="sum",
+            )
+        loss_box_area_reg = loss_box_area_reg / self.gt_classes.numel()
+        return loss_box_area_reg
 
     def _predict_boxes(self):
         """

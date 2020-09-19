@@ -2,6 +2,7 @@
 import math
 from typing import Tuple
 import torch
+import pdb
 
 # Value for clamping large dw and dh predictions. The heuristic is that we clamp
 # such that dw and dh are no larger than what would transform a 16px box into a
@@ -21,7 +22,10 @@ class Box2BoxTransform(object):
     """
 
     def __init__(
-        self, weights: Tuple[float, float, float, float], scale_clamp: float = _DEFAULT_SCALE_CLAMP
+        self, 
+        weights: Tuple[float, float, float, float], 
+        scale_clamp: float = _DEFAULT_SCALE_CLAMP,
+        area: float
     ):
         """
         Args:
@@ -34,6 +38,7 @@ class Box2BoxTransform(object):
         """
         self.weights = weights
         self.scale_clamp = scale_clamp
+        self.area = weights[2] * weights[3]
 
     def get_deltas(self, src_boxes, target_boxes):
         """
@@ -69,6 +74,26 @@ class Box2BoxTransform(object):
         deltas = torch.stack((dx, dy, dw, dh), dim=1)
         assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
         return deltas
+    
+    def get_deltas_area(self, src_boxes, target_boxes):
+        assert isinstance(src_boxes, torch.Tensor), type(src_boxes)
+        assert isinstance(target_boxes, torch.Tensor), type(target_boxes)
+        #get source weight height
+        src_widths = src_boxes[:, 2] - src_boxes[:, 0]
+        src_heights = src_boxes[:, 3] - src_boxes[:, 1]
+        #get target weight height
+        target_widths = target_boxes[:, 2] - target_boxes[:, 0]
+        target_heights = target_boxes[:, 3] - target_boxes[:, 1]
+        #caluate source area
+        source_area = src_widths * src_heights
+        target_area = target_widths * target_heights
+        delta_a = target_area - source_area
+        #set delta
+        deltas_area = torch.stack(delta_a, dim=1)
+        pdb.set_trace()
+        assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
+        return deltas_area
+
 
     def apply_deltas(self, deltas, boxes):
         """
@@ -108,7 +133,6 @@ class Box2BoxTransform(object):
         pred_boxes[:, 2::4] = pred_ctr_x + 0.5 * pred_w  # x2
         pred_boxes[:, 3::4] = pred_ctr_y + 0.5 * pred_h  # y2
         return pred_boxes
-
 
 @torch.jit.script
 class Box2BoxTransformRotated(object):
