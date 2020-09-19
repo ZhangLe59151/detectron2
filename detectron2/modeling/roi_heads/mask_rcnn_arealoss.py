@@ -147,6 +147,7 @@ class FastRCNNOutputs:
         proposals,
         smooth_l1_beta=0.0,
         box_reg_loss_type="smooth_l1",
+        input_shape,
     ):
         """
         Args:
@@ -502,7 +503,7 @@ class AMaskRCNNOutputLayers(nn.Module):
             proposals,
             self.smooth_l1_beta,
             self.box_reg_loss_type,
-            self.input_shape
+            input_shape
         ).losses()
         #debug
         #pdb.set_trace()
