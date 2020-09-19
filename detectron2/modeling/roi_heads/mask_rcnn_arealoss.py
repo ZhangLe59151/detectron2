@@ -304,7 +304,6 @@ class FastRCNNOutputs:
     # my loss
     def my_loss(self):
         # return debug 
-        '''
         if self._no_instances:
             return 0.0 * self.pred_proposal_deltas.sum()
         box_dim = self.gt_boxes.tensor.size(1)  # 4 or 5
@@ -321,14 +320,16 @@ class FastRCNNOutputs:
                 self.proposals.tensor, self.gt_boxes.tensor
             )
         pdb.set_trace()
+        '''
         loss_box_area_reg = smooth_l1_loss(
                 self.pred_proposal_deltas[fg_inds[:, None], gt_class_cols],
                 gt_proposal_deltas[fg_inds],
                 self.smooth_l1_beta,
                 reduction="sum",
             )
-        loss_box_area_reg = loss_box_area_reg / self.gt_classes.numel() '''
+        loss_box_area_reg = loss_box_area_reg / self.gt_classes.numel()
         pdb.set_trace()
+        '''
         return F.cross_entropy(self.pred_class_logits, self.gt_classes, reduction="mean")
 
     def _predict_boxes(self):
