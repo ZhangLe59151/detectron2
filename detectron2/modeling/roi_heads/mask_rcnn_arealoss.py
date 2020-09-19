@@ -299,6 +299,7 @@ class FastRCNNOutputs:
         # means that the single example in minibatch (1) and each of the 100 examples
         # in minibatch (2) are given equal influence.
         loss_box_reg = loss_box_reg / self.gt_classes.numel()
+        print(self.num_preds_per_image)
         return loss_box_reg
 
     # my loss
