@@ -22,6 +22,9 @@ from .fast_rcnn import FastRCNNOutputLayers
 from .keypoint_head import build_keypoint_head
 from .mask_head import build_mask_head
 
+from .mask_rcnn_arealoss import AMaskRCNNOutputLayers
+import pdb
+
 ROI_HEADS_REGISTRY = Registry("ROI_HEADS")
 ROI_HEADS_REGISTRY.__doc__ = """
 Registry for ROI heads in a generalized R-CNN model.
@@ -586,7 +589,9 @@ class StandardROIHeads(ROIHeads):
         box_head = build_box_head(
             cfg, ShapeSpec(channels=in_channels, height=pooler_resolution, width=pooler_resolution)
         )
-        box_predictor = FastRCNNOutputLayers(cfg, box_head.output_shape)
+        # add debug
+        pdb.set_trace()
+        box_predictor = AMaskRCNNOutputLayers(cfg, box_head.output_shape)
         return {
             "box_in_features": in_features,
             "box_pooler": box_pooler,

@@ -1,3 +1,6 @@
+# Zhang Le 
+# 2020 Sep 17
+
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
 import logging
 from typing import Dict, Union
@@ -12,7 +15,7 @@ from detectron2.modeling.box_regression import Box2BoxTransform
 from detectron2.structures import Boxes, Instances
 from detectron2.utils.events import get_event_storage
 
-__all__ = ["fast_rcnn_inference", "FastRCNNOutputLayers"]
+__all__ = ["fast_rcnn_inference", "AMaskRCNNOutputLayers"]
 
 
 logger = logging.getLogger(__name__)
@@ -299,7 +302,7 @@ class FastRCNNOutputs:
     # my lodd
     def my_loss(self):
         # return
-        return Null
+        return 0
 
     def _predict_boxes(self):
         """
@@ -323,7 +326,7 @@ class FastRCNNOutputs:
         Returns:
             A dict of losses (scalar tensors) containing keys "loss_cls" and "loss_box_reg".
         """
-        return {"loss_cls": self.softmax_cross_entropy_loss(), "loss_box_reg": self.box_reg_loss()}
+        return {"loss_cls": self.softmax_cross_entropy_loss(), "loss_box_reg": self.box_reg_loss(), "loss_my_loss": self.my_loss()}
 
     def predict_boxes(self):
         """
@@ -350,7 +353,7 @@ class FastRCNNOutputs:
         )
 
 
-class FastRCNNOutputLayers(nn.Module):
+class AMaskRCNNOutputLayers(nn.Module):
     """
     Two linear layers for predicting Fast R-CNN outputs:
 

@@ -14,5 +14,6 @@ from .rotated_fast_rcnn import RROIHeads
 from .fast_rcnn import FastRCNNOutputLayers
 
 from . import cascade_rcnn  # isort:skip
+from .mask_rcnn_arealoss import AMaskRCNNOutputLayers
 
 __all__ = list(globals().keys())
