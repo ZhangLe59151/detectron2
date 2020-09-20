@@ -7,6 +7,7 @@ from .roi_heads import (
     ROIHeads,
     Res5ROIHeads,
     StandardROIHeads,
+    MyAreaROIHeads,
     build_roi_heads,
     select_foreground_proposals,
 )
