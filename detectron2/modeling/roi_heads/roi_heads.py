@@ -663,7 +663,7 @@ class StandardROIHeads(ROIHeads):
         """
         json_str = json.dumps(images.image_sizes)
         with open('file.json', 'w') as f:
-            json.dumps(images.image_sizes, f)
+            json.dump(images.image_sizes, f)
             print('write into completed.')
 
         #del images
