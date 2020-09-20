@@ -101,7 +101,7 @@ class Box2BoxTransform(object):
         p_box_4 = tar_x_4 + tar_y_4 * 0.001
         # print('pbox_1 :', p_box_1)
         zero = torch.zeros_like(p_box_1)
-        # p_box_new = p_box_1
+        p_box_new = p_box_1
         assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
         return deltas
 
