@@ -418,8 +418,7 @@ class Res5ROIHeads(ROIHeads):
         """
         See :meth:`ROIHeads.forward`.
         """
-        print('images, ', images)
-        # del images
+        del images
 
         if self.training:
             assert targets
@@ -662,7 +661,8 @@ class StandardROIHeads(ROIHeads):
         """
         See :class:`ROIHeads.forward`.
         """
-        del images
+        print('images, ', images)
+        #del images
         if self.training:
             assert targets
             proposals = self.label_and_sample_proposals(proposals, targets)
