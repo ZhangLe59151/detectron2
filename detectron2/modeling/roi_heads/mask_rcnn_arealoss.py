@@ -320,11 +320,14 @@ class FastRCNNOutputs:
             gt_class_cols = box_dim * fg_gt_classes[:, None] + torch.arange(box_dim, device=device)
         with open('file.json', 'r') as f:
             area_json = json.load(f)
-        area1 = area_json[0]
-        print('area1: ',area1)
-        area = 0
+        area1 = area_json[0][0] * area_json[0][1]
+        area2 = area_json[1][0] * area_json[1][1]
+        area3 = area_json[2][0] * area_json[2][1]
+        area4 = area_json[3][0] * area_json[3][1]
+        print('area: ', area_json)
+        print('areas: ', area1)
         gt_proposal_deltas = self.box2box_transform.get_deltas_area(
-                self.proposals.tensor, self.gt_boxes.tensor, area
+                self.proposals.tensor, self.gt_boxes.tensor, area1, area2, area3, area4
             )
         loss_box_area_reg = smooth_l1_loss(
                 self.pred_proposal_deltas[fg_inds[:, None], gt_class_cols],
