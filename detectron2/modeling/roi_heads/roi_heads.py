@@ -661,7 +661,7 @@ class StandardROIHeads(ROIHeads):
         """
         See :class:`ROIHeads.forward`.
         """
-        print('images, ', images)
+        print('image size, ', images.image_sizes)
         #del images
         if self.training:
             assert targets
