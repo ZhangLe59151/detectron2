@@ -98,8 +98,8 @@ class Box2BoxTransform(object):
         target_area_3 = target_widths_3 * target_heights_3 / area3
         target_area_4 = target_widths_4 * target_heights_4 / area4
         target_area =  torch.cat((target_area_1, target_area_2, target_area_3, target_area_4), dim=0)
-        delta_area = (target_area - source_area) 
-        deltas = torch.stack((delta_area, delta_area, delta_area, delta_area), dim=1)
+        # delta_area = (target_area - source_area) 
+        # deltas = torch.stack((delta_area, delta_area, delta_area, delta_area), dim=1)
         # get target x 
         '''
         target_x = target_boxes[:, 0]
@@ -115,7 +115,8 @@ class Box2BoxTransform(object):
         p_box_new = p_box_1
         '''
         assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
-        return deltas
+        # return deltas
+        return source_area, target_area
 
     def apply_deltas(self, deltas, boxes):
         """

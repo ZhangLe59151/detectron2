@@ -323,12 +323,18 @@ class FastRCNNOutputs:
         area2 = area_json[1][0] * area_json[1][1]
         area3 = area_json[2][0] * area_json[2][1]
         area4 = area_json[3][0] * area_json[3][1]
-        gt_proposal_deltas = self.box2box_transform.get_deltas_area(
+        source_area, target_area = self.box2box_transform.get_deltas_area(
                 self.proposals.tensor, self.gt_boxes.tensor, area1, area2, area3, area4
             )
+        # loss_box_area_reg = smooth_l1_loss(
+        #         self.pred_proposal_deltas[fg_inds[:, None], gt_class_cols],
+        #         gt_proposal_deltas[fg_inds],
+        #         self.smooth_l1_beta,
+        #         reduction="sum",
+        #     )
         loss_box_area_reg = smooth_l1_loss(
-                self.pred_proposal_deltas[fg_inds[:, None], gt_class_cols],
-                gt_proposal_deltas[fg_inds],
+                source_area,
+                target_area,
                 self.smooth_l1_beta,
                 reduction="sum",
             )
