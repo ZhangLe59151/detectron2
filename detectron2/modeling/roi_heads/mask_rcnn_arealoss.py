@@ -319,7 +319,6 @@ class FastRCNNOutputs:
             fg_gt_classes = self.gt_classes[fg_inds]
             gt_class_cols = box_dim * fg_gt_classes[:, None] + torch.arange(box_dim, device=device)
         area_json = self.image_shapes
-        print('area: ', area_json)
         area1 = area_json[0][0] * area_json[0][1]
         area2 = area_json[1][0] * area_json[1][1]
         area3 = area_json[2][0] * area_json[2][1]
