@@ -97,9 +97,7 @@ class Box2BoxTransform(object):
         target_area_2 = target_widths_2 * target_heights_2 / area2
         target_area_3 = target_widths_3 * target_heights_3 / area3
         target_area_4 = target_widths_4 * target_heights_4 / area4
-        target_area =  torch.stack((target_area_1, target_area_2, target_area_3, target_area_4), dim=0)
-        print(source_area.shape)
-        print(target_area.shape)
+        target_area =  torch.cat((target_area_1, target_area_2, target_area_3, target_area_4), dim=0)
         delta_area = (target_area - source_area) 
         deltas = torch.stack((delta_area, delta_area, delta_area, delta_area), dim=1)
         # get target x 
