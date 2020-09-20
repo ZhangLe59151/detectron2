@@ -333,8 +333,8 @@ class MyFastRCNNOutputs:
         #         reduction="sum",
         #     )
         loss_box_area_reg = smooth_l1_loss(
-                source_area,
-                target_area,
+                source_area[fg_inds],
+                target_area[fg_inds],
                 self.smooth_l1_beta,
                 reduction="sum",
             )
