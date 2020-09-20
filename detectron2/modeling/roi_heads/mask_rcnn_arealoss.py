@@ -354,6 +354,7 @@ class FastRCNNOutputs:
         """
         #debug
         #pdb.set_trace()
+        print('see image file')
         return {"loss_cls": self.softmax_cross_entropy_loss(), "loss_box_reg": self.box_reg_loss(), "my_loss": self.my_loss()}
 
     def predict_boxes(self):
