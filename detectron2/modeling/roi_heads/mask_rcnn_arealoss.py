@@ -324,8 +324,6 @@ class FastRCNNOutputs:
         area2 = area_json[1][0] * area_json[1][1]
         area3 = area_json[2][0] * area_json[2][1]
         area4 = area_json[3][0] * area_json[3][1]
-        print('area: ', area_json)
-        print('areas: ', area1)
         gt_proposal_deltas = self.box2box_transform.get_deltas_area(
                 self.proposals.tensor, self.gt_boxes.tensor, area1, area2, area3, area4
             )

@@ -68,9 +68,6 @@ class Box2BoxTransform(object):
         dy = wy * (target_ctr_y - src_ctr_y) / src_heights
         dw = ww * torch.log(target_widths / src_widths)
         dh = wh * torch.log(target_heights / src_heights)
-        #print('w', src_widths)
-        #print('h', src_heights)
-        #print('area', src_widths * src_heights)
 
         deltas = torch.stack((dx, dy, dw, dh), dim=1)
         assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
@@ -93,6 +90,8 @@ class Box2BoxTransform(object):
         source_area_3 = src_widths_3 * src_heights_3 / area3
         source_area_4 = src_widths_4 * src_heights_4 / area4
         source_area = torch.cat((source_area_1, source_area_2, source_area_3, source_area_4), dim=0)
+        print(src_widths)
+        print(source_area)
         #calculate targer area
         target_widths_1, target_widths_2, target_widths_3, target_widths_4 = target_widths.split([64,64,64,64], dim=0)
         target_heights_1, target_heights_2, target_heights_3, target_heights_4 = target_heights.split([64,64,64,64], dim=0)
