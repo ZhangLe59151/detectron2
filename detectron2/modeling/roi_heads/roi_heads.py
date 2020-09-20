@@ -23,7 +23,7 @@ from .keypoint_head import build_keypoint_head
 from .mask_head import build_mask_head
 
 from .mask_rcnn_arealoss import AMaskRCNNOutputLayers
-import pdb
+import pdb, json
 
 ROI_HEADS_REGISTRY = Registry("ROI_HEADS")
 ROI_HEADS_REGISTRY.__doc__ = """
@@ -661,7 +661,11 @@ class StandardROIHeads(ROIHeads):
         """
         See :class:`ROIHeads.forward`.
         """
-        print('image size, ', images.image_sizes)
+        json_str = json.dumps(images.image_sizes)
+        with open('file.json', 'w') as f:
+            json.dumps(images.image_sizes, f)
+            print('write into completed.')
+
         #del images
         if self.training:
             assert targets

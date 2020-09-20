@@ -2,7 +2,7 @@
 import math
 from typing import Tuple
 import torch
-import pdb
+import pdb, json
 import numpy as np
 
 # Value for clamping large dw and dh predictions. The heuristic is that we clamp
@@ -86,6 +86,10 @@ class Box2BoxTransform(object):
         target_widths = target_boxes[:, 2] - target_boxes[:, 0]
         target_heights = target_boxes[:, 3] - target_boxes[:, 1]
         #caluate source area
+        with open('file.json') as f:
+            area_json = json.load(f)
+        area1 = area_json[0]
+        print('area1: ', area1)
         source_area = src_widths * src_heights / (4192 * 3584)
         target_area = target_widths * target_heights / (4192 * 3584)
         delta_area = (target_area - source_area) 
