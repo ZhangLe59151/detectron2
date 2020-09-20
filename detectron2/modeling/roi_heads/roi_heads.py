@@ -661,7 +661,7 @@ class StandardROIHeads(ROIHeads):
         """
         See :class:`ROIHeads.forward`.
         """
-        print('image size, ', images.image_sizes)
+        #print('image size, ', images.image_sizes)
         #del images
         if self.training:
             assert targets
@@ -737,6 +737,7 @@ class StandardROIHeads(ROIHeads):
 
         if self.training:
             losses = self.box_predictor.losses(predictions, proposals)
+            print('see loss', losses)
             # proposals is modified in-place below, so losses must be computed first.
             if self.train_on_pred_boxes:
                 with torch.no_grad():
