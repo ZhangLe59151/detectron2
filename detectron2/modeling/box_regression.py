@@ -79,9 +79,6 @@ class Box2BoxTransform(object):
     def get_deltas_area(self, src_boxes, target_boxes, area):
         assert isinstance(src_boxes, torch.Tensor), type(src_boxes)
         assert isinstance(target_boxes, torch.Tensor), type(target_boxes)
-        with open('file.json', 'r') as f:
-            area_json = json.load(f)
-        area1 = area_json[0]
         #get source weight height
         src_widths = src_boxes[:, 2] - src_boxes[:, 0]
         src_heights = src_boxes[:, 3] - src_boxes[:, 1]
