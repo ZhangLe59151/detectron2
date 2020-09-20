@@ -13,10 +13,6 @@ _DEFAULT_SCALE_CLAMP = math.log(1000.0 / 16)
 
 __all__ = ["Box2BoxTransform", "Box2BoxTransformRotated"]
 
-def testOnNp(a):
-    print(a)
-    print('list:', a.numpy())
-
 @torch.jit.script
 class Box2BoxTransform(object):
     """
@@ -101,9 +97,7 @@ class Box2BoxTransform(object):
         tar_y_1 ,tar_y_2, tar_y_3, tar_y_4 = target_y.split([64,64,64,64], dim=0)
         print('tar_x_1 :', tar_x_1)
         print('tar_y_1 :', tar_y_1)
-        testOnNp(tar_x_1)
         a2 ,b2, c2, d2 = target_widths.split([64,64,64,64], dim=0)
-        
         assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
         return deltas
 
