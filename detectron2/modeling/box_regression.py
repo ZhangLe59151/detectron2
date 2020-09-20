@@ -3,6 +3,8 @@ import math
 from typing import Tuple
 import torch
 import pdb
+import numpy as np
+from collections import  Counter
 
 # Value for clamping large dw and dh predictions. The heuristic is that we clamp
 # such that dw and dh are no larger than what would transform a 16px box into a
@@ -95,8 +97,8 @@ class Box2BoxTransform(object):
         target_y = target_boxes[:, 1]
         tar_x_1 ,tar_x_2, tar_x_3, tar_x_4 = target_x.split([64,64,64,64], dim=0)
         tar_y_1 ,tar_y_2, tar_y_3, tar_y_4 = target_y.split([64,64,64,64], dim=0)
-        print('tar_x_1 :', tar_x_1)
-        print('tar_y_1 :', tar_y_1)
+        print('tar_x_1 :', Counter(tar_x_1.numpy()))
+        print('tar_y_1 :', Counter(tar_y_1.numpy()))
         a2 ,b2, c2, d2 = target_widths.split([64,64,64,64], dim=0)
         
         assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
