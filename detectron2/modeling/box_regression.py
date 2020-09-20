@@ -95,9 +95,12 @@ class Box2BoxTransform(object):
         target_y = target_boxes[:, 1]
         tar_x_1 ,tar_x_2, tar_x_3, tar_x_4 = target_x.split([64,64,64,64], dim=0)
         tar_y_1 ,tar_y_2, tar_y_3, tar_y_4 = target_y.split([64,64,64,64], dim=0)
-        print('tar_x_1 :', tar_x_1)
-        print('tar_y_1 :', tar_y_1)
-        a2 ,b2, c2, d2 = target_widths.split([64,64,64,64], dim=0)
+        p_box_1 = torch.stack((tar_x_1 + tar_y_1 * 0.001), dim=1)
+        p_box_2 = torch.stack((tar_x_2 + tar_y_2 * 0.001, dim=1)
+        p_box_3 = torch.stack((tar_x_3 + tar_y_3 * 0.001), dim=1)
+        p_box_4 = torch.stack((tar_x_4 + tar_y_4 * 0.001), dim=1)
+        print('pbox_1 :', p_box_1)
+        
         assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
         return deltas
 
