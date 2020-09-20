@@ -341,7 +341,6 @@ class ROIHeads(torch.nn.Module):
             dict[str->Tensor]:
             mapping from a named loss to a tensor storing the loss. Used during training only.
         """
-        print('images', images)
         raise NotImplementedError()
 
 
@@ -419,7 +418,8 @@ class Res5ROIHeads(ROIHeads):
         """
         See :meth:`ROIHeads.forward`.
         """
-        del images
+        print('images, ', images)
+        # del images
 
         if self.training:
             assert targets
