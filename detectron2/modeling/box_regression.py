@@ -102,12 +102,6 @@ class Box2BoxTransform(object):
         print('pbox_1 :', p_box_1)
         zero = torch.zeros_like(p_box_1)
         p_box_new = p_box_1
-        a_num = 0
-        while (torch.equal(p_box_new, zero) == False):
-            a_num = a_num + 1
-            max_t = p_box_new.max()
-            p_box_new = torch.where(p_box_new == max_t, zero, p_box_new)
-        print('pbox_1 :', a_num)
         assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
         return deltas
 
