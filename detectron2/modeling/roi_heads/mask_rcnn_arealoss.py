@@ -303,7 +303,8 @@ class FastRCNNOutputs:
 
     # my loss
     def my_loss(self):
-        print(self.pred_class_logits.shape)
+        # print(self.pred_class_logits.shape)
+        print(self.gt_classes)
         import pdb; pdb.set_trace()
         # return debug 
         if self._no_instances:
