@@ -133,7 +133,7 @@ def fast_rcnn_inference_single_image(
     return result, filter_inds[:, 0]
 
 
-class FastRCNNOutputs:
+class MyFastRCNNOutputs:
     """
     An internal implementation that stores information about outputs of a Fast R-CNN head,
     and provides methods that are used to decode the outputs of a Fast R-CNN head.
@@ -508,7 +508,7 @@ class AMaskRCNNOutputLayers(nn.Module):
             Dict[str, Tensor]: dict of losses
         """
         scores, proposal_deltas = predictions
-        losses = FastRCNNOutputs(
+        losses = MyFastRCNNOutputs(
             self.box2box_transform,
             scores,
             proposal_deltas,
