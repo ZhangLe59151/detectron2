@@ -504,7 +504,6 @@ class StandardROIHeads(ROIHeads):
         keypoint_pooler: Optional[ROIPooler] = None,
         keypoint_head: Optional[nn.Module] = None,
         train_on_pred_boxes: bool = False,
-        images: ImageList,
         **kwargs
     ):
         """
@@ -712,7 +711,7 @@ class StandardROIHeads(ROIHeads):
         return instances
 
     def _forward_box(
-        self, features: Dict[str, torch.Tensor], proposals: List[Instances]
+        self, features: Dict[str, torch.Tensor], proposals: List[Instances], images: ImageList
     ) -> Union[Dict[str, torch.Tensor], List[Instances]]:
         """
         Forward logic of the box prediction branch. If `self.train_on_pred_boxes is True`,
