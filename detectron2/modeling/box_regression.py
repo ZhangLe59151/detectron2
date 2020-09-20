@@ -76,9 +76,12 @@ class Box2BoxTransform(object):
         assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
         return deltas
     
-    def get_deltas_area(self, src_boxes, target_boxes):
+    def get_deltas_area(self, src_boxes, target_boxes, area):
         assert isinstance(src_boxes, torch.Tensor), type(src_boxes)
         assert isinstance(target_boxes, torch.Tensor), type(target_boxes)
+        with open('file.json', 'r') as f:
+            area_json = json.load(f)
+        area1 = area_json[0]
         #get source weight height
         src_widths = src_boxes[:, 2] - src_boxes[:, 0]
         src_heights = src_boxes[:, 3] - src_boxes[:, 1]
@@ -86,10 +89,6 @@ class Box2BoxTransform(object):
         target_widths = target_boxes[:, 2] - target_boxes[:, 0]
         target_heights = target_boxes[:, 3] - target_boxes[:, 1]
         #caluate source area
-        with open('file.json') as f:
-            area_json = json.load(f)
-        area1 = area_json[0]
-        print('area1: ', area1)
         source_area = src_widths * src_heights / (4192 * 3584)
         target_area = target_widths * target_heights / (4192 * 3584)
         delta_area = (target_area - source_area) 

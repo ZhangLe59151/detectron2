@@ -318,8 +318,10 @@ class FastRCNNOutputs:
         else:
             fg_gt_classes = self.gt_classes[fg_inds]
             gt_class_cols = box_dim * fg_gt_classes[:, None] + torch.arange(box_dim, device=device)
+        # with open('file.json') as f:
+        area = 0
         gt_proposal_deltas = self.box2box_transform.get_deltas_area(
-                self.proposals.tensor, self.gt_boxes.tensor
+                self.proposals.tensor, self.gt_boxes.tensor, area
             )
         loss_box_area_reg = smooth_l1_loss(
                 self.pred_proposal_deltas[fg_inds[:, None], gt_class_cols],
