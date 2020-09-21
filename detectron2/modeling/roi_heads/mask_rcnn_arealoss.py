@@ -319,13 +319,12 @@ class MyFastRCNNOutputs:
             fg_gt_classes = self.gt_classes[fg_inds]
             gt_class_cols = box_dim * fg_gt_classes[:, None] + torch.arange(box_dim, device=device)
         area_json = self.image_shapes
-        area1 = area_json[0][0] * area_json[0][1]
-        area2 = area_json[1][0] * area_json[1][1]
-        area3 = area_json[2][0] * area_json[2][1]
-        area4 = area_json[3][0] * area_json[3][1]
-        source_area, target_area = self.box2box_transform.get_deltas_area(
-                self.proposals.tensor, self.gt_boxes.tensor, area1, area2, area3, area4
-            )
+        areas = [area_json[i][0] * area_json[i][1] for i in range(len(self.image_shapes))]
+
+        predicted_boxes = self.predict_boxes()
+        split_gt_boxes = self.gt_boxes.tensor.split(self.num_preds_per_image, dim=0)
+        source_area, target_area = self.box2box_transform.get_relative_areas(
+                predicted_boxes, split_gt_boxes, areas)
         # loss_box_area_reg = smooth_l1_loss(
         #         self.pred_proposal_deltas[fg_inds[:, None], gt_class_cols],
         #         gt_proposal_deltas[fg_inds],
@@ -338,9 +337,9 @@ class MyFastRCNNOutputs:
                 self.smooth_l1_beta,
                 reduction="sum",
             )
-        # loss_box_area_reg = loss_box_area_reg / self.gt_classes.numel()
+        loss_box_area_reg = loss_box_area_reg / self.gt_classes.numel()
         # why, no need to normalize the this loss to number of regions
-        loss_box_area_reg = loss_box_area_reg / fg_inds.numel()
+        # loss_box_area_reg = loss_box_area_reg / fg_inds.numel()
         return loss_box_area_reg
 
     def _predict_boxes(self):

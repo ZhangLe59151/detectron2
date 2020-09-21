@@ -73,34 +73,30 @@ class Box2BoxTransform(object):
         assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
         return deltas
     
-    def get_deltas_area(self, src_boxes, target_boxes, area1, area2, area3, area4):
-        assert isinstance(src_boxes, torch.Tensor), type(src_boxes)
-        assert isinstance(target_boxes, torch.Tensor), type(target_boxes)
+    def get_relative_areas(self, src_boxes_list, target_boxes_list, areas):
+        # assert isinstance(src_boxes, torch.Tensor), type(src_boxes)
+        # assert isinstance(target_boxes, torch.Tensor), type(target_boxes)
         #get source weight height
-        src_widths = src_boxes[:, 2] - src_boxes[:, 0]
-        src_heights = src_boxes[:, 3] - src_boxes[:, 1]
-        #get target weight height
-        target_widths = target_boxes[:, 2] - target_boxes[:, 0]
-        target_heights = target_boxes[:, 3] - target_boxes[:, 1]
-        #caluate source area
-        src_widths_1, src_widths_2, src_widths_3, src_widths_4 = src_widths.split([64,64,64,64], dim=0)
-        src_heights_1, src_heights_2, src_heights_3, src_heights_4 = src_heights.split([64,64,64,64], dim=0)
-        source_area_1 = src_widths_1 * src_heights_1 / area1
-        source_area_2 = src_widths_2 * src_heights_2 / area2
-        source_area_3 = src_widths_3 * src_heights_3 / area3
-        source_area_4 = src_widths_4 * src_heights_4 / area4
-        source_area = torch.cat((source_area_1, source_area_2, source_area_3, source_area_4), dim=0)
-        #calculate targer area
-        target_widths_1, target_widths_2, target_widths_3, target_widths_4 = target_widths.split([64,64,64,64], dim=0)
-        target_heights_1, target_heights_2, target_heights_3, target_heights_4 = target_heights.split([64,64,64,64], dim=0)
-        target_area_1 = target_widths_1 * target_heights_1 / area1
-        target_area_2 = target_widths_2 * target_heights_2 / area2
-        target_area_3 = target_widths_3 * target_heights_3 / area3
-        target_area_4 = target_widths_4 * target_heights_4 / area4
-        target_area =  torch.cat((target_area_1, target_area_2, target_area_3, target_area_4), dim=0)
-        # delta_area = (target_area - source_area) 
-        # deltas = torch.stack((delta_area, delta_area, delta_area, delta_area), dim=1)
-        # get target x 
+        assert isinstance(src_boxes_list, list)
+        assert isinstance(target_boxes_list, list)
+
+        sas = []
+        tas = []
+        for i in range(len(src_boxes_list)):
+            src_boxes = src_boxes_list[i]   
+            target_boxes = target_boxes_list[i]
+
+            src_widths = src_boxes[:, 2] - src_boxes[:, 0]
+            src_heights = src_boxes[:, 3] - src_boxes[:, 1]
+            #get target weight height
+            target_widths = target_boxes[:, 2] - target_boxes[:, 0]
+            target_heights = target_boxes[:, 3] - target_boxes[:, 1]
+            #caluate source area
+            sas.append(src_widths * src_heights / areas[i])
+            tas.append(target_widths * target_heights / areas[i])
+
+        source_area = torch.cat(sas, dim=0)
+        target_area =  torch.cat(tas, dim=0)
         '''
         target_x = target_boxes[:, 0]
         target_y = target_boxes[:, 1]
@@ -114,7 +110,7 @@ class Box2BoxTransform(object):
         zero = torch.zeros_like(p_box_1)
         p_box_new = p_box_1
         '''
-        assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
+        # assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
         # return deltas
         return source_area, target_area
 
