@@ -77,8 +77,8 @@ class Box2BoxTransform(object):
         # assert isinstance(src_boxes, torch.Tensor), type(src_boxes)
         # assert isinstance(target_boxes, torch.Tensor), type(target_boxes)
         #get source weight height
-        assert isinstance(src_boxes_list, list)
-        assert isinstance(target_boxes_list, list)
+        assert isinstance(src_boxes_list, tuple)
+        assert isinstance(target_boxes_list, tuple)
 
         sas = []
         tas = []
