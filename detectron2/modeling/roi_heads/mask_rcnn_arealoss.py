@@ -338,7 +338,9 @@ class MyFastRCNNOutputs:
                 self.smooth_l1_beta,
                 reduction="sum",
             )
-        loss_box_area_reg = loss_box_area_reg / self.gt_classes.numel()
+        # loss_box_area_reg = loss_box_area_reg / self.gt_classes.numel()
+        # why, no need to normalize the this loss to number of regions
+        loss_box_area_reg = loss_box_area_reg / self.fg_inds.numel()
         return loss_box_area_reg
 
     def _predict_boxes(self):
