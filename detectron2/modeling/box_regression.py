@@ -138,9 +138,8 @@ class Box2BoxTransform(object):
         area_0 = 0
         for item in target_box:
             area_0 = area_0 + (item[2] - item[0]) * (item[3] - item[1])
-        print('aera', area_0)
-        print('aera', areas[0])
-        print('ratio area', area_0 / areas[0])
+        ratio_0 = area_0 / areas[0]
+        print('ratio area', ratio_0)
         # max_t = target_boxes_list.max()
         # print(max_t)
 
