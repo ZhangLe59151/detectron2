@@ -126,7 +126,9 @@ class Box2BoxTransform(object):
         # tar_x_1 ,tar_x_2, tar_x_3, tar_x_4 = target_boxes_list.split([64,64,64,64], dim=0)
         for item in target_boxes_list[0]:
             print('item : ', item)
-            if item not in target_box:
+            if item in target_box:
+                print('--duplicate')
+            else:
                 target_box.append(item)
                 number_of_target_box += 1
         print('number_of_target_box', number_of_target_box)
