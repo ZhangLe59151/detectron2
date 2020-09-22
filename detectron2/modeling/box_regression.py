@@ -125,11 +125,14 @@ class Box2BoxTransform(object):
         target_box = []
         # tar_x_1 ,tar_x_2, tar_x_3, tar_x_4 = target_boxes_list.split([64,64,64,64], dim=0)
         for item in target_boxes_list[0]:
-            need_add = False
+            need_add = True
             for item_box in target_box:
                 print('True? ', item_box.equal(item))
-            target_box.append(item)
-            number_of_target_box += 1
+                if item_box.equal(item):
+                    need_add = False
+            if need_add:
+                target_box.append(item)
+                number_of_target_box += 1
         print('number_of_target_box', number_of_target_box)
         print('target_box', target_box)
         # max_t = target_boxes_list.max()
