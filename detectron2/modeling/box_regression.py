@@ -123,7 +123,7 @@ class Box2BoxTransform(object):
 
         sas = []
         tas = []
-        tar_x_1 ,tar_x_2, tar_x_3, tar_x_4 = target_x.split([64,64,64,64], dim=0)
+        tar_x_1 ,tar_x_2, tar_x_3, tar_x_4 = target_boxes_list.split([64,64,64,64], dim=0)
         print(tar_x_1)
 
         source_area = torch.cat(sas, dim=0)
