@@ -137,7 +137,11 @@ class Box2BoxTransform(object):
         print('target_box', target_box)
         area_0 = 0
         for item in target_box:
-            area_0 = area_0 + (item[:, 2] - item[:, 0]) * (item[:, 3] - item[:, 1])
+            width = item[:, 2] - item[:, 0]
+            print('width: ', width)
+            height = item[:, 3] - item[:, 1]
+            print('height : ', height)
+            area_0 = area_0 + width * height
         print('aera', areas[0])
         # max_t = target_boxes_list.max()
         # print(max_t)
