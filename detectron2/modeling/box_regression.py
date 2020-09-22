@@ -125,7 +125,7 @@ class Box2BoxTransform(object):
         target_box = []
 
         # tar_x_1 ,tar_x_2, tar_x_3, tar_x_4 = target_boxes_list.split([64,64,64,64], dim=0)
-        for item in src_boxes_list[0]:
+        for item in target_boxes_list[0]:
             need_add = True
             for item_box in target_box:
                 if item_box.equal(item):
@@ -135,6 +135,9 @@ class Box2BoxTransform(object):
                 number_of_target_box += 1
         print('number_of_target_box', number_of_target_box)
         print('target_box', target_box)
+        area_0 = 0 * target_box[0][0]
+        for item in target_box:
+            area_0 = area_0 + (item[:, 2] - item[:, 0]) * (item[:, 3] - item[:, 1])
         print('aera', areas[0])
         # max_t = target_boxes_list.max()
         # print(max_t)
