@@ -125,7 +125,7 @@ class Box2BoxTransform(object):
         target_box = []
 
         # tar_x_1 ,tar_x_2, tar_x_3, tar_x_4 = target_boxes_list.split([64,64,64,64], dim=0)
-        for item in target_boxes_list[0]:
+        for item in src_boxes_list[0]:
             need_add = True
             for item_box in target_box:
                 if item_box.equal(item):
