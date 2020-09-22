@@ -114,12 +114,15 @@ class Box2BoxTransform(object):
         # return deltas
         return source_area, target_area
     
-    def get_relative_areas_ratio(self, src_boxes_list, target_boxes_list, areas):
+    def get_relative_areas_ratio(self, src_boxes_list, target_boxes_list, areas, pred_class_logits, gt_classes):
         # assert isinstance(src_boxes, torch.Tensor), type(src_boxes)
         # assert isinstance(target_boxes, torch.Tensor), type(target_boxes)
         #get source weight height
         assert isinstance(src_boxes_list, tuple)
         assert isinstance(target_boxes_list, tuple)
+
+        print('pred_class_logits', pred_class_logits)
+        print('gt_classes', gt_classes)
 
         number_of_target_box = 0
         target_box = []
@@ -133,15 +136,24 @@ class Box2BoxTransform(object):
             if need_add:
                 target_box.append(item)
                 number_of_target_box += 1
-        print('number_of_target_box', number_of_target_box)
-        print('target_box', target_box)
         area_0 = 0
         for item in target_box:
             area_0 = area_0 + (item[2] - item[0]) * (item[3] - item[1])
         ratio_0 = area_0 / areas[0]
         print('ratio area', ratio_0)
-        # max_t = target_boxes_list.max()
-        # print(max_t)
+        
+        score_num = 0 
+        area_s = 0
+        for box in target_box:
+            i = 0
+            area_t = 0
+            for item in target_boxes_list[0]:
+                if box.equal(item):
+                    if (torch.gt(pred_class_logits[i], score_num) && th > 0.7):
+                        score_num = pred_class_logits[i]
+                        area_t = (src_boxes_list[0][i][2] - src_boxes_list[0][i][0]) * (src_boxes_list[0][i][3] - item[1])
+            area_s = area_s + area_t
+        print('ratio sorce area', area_s)
 
         sas = []
         tas = []
