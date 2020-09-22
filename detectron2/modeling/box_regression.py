@@ -136,7 +136,6 @@ class Box2BoxTransform(object):
             if need_add:
                 target_box.append(item)
                 number_of_target_box += 1
-            i += 1
         area_0 = 0
         for item in target_box:
             area_0 = area_0 + (item[2] - item[0]) * (item[3] - item[1])
