@@ -147,7 +147,7 @@ class Box2BoxTransform(object):
             i = 0
             for item in target_boxes_lis:
                 if box.equal(item):
-
+                    pass
         
 
         sas = []
