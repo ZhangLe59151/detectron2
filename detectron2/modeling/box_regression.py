@@ -133,15 +133,14 @@ class Box2BoxTransform(object):
             if need_add:
                 target_box.append(item)
                 number_of_target_box += 1
-        print('number_of_target_box', number_of_target_box)
-        print('target_box', target_box)
         area_0 = 0
         for item in target_box:
             area_0 = area_0 + (item[2] - item[0]) * (item[3] - item[1])
         ratio_0 = area_0 / areas[0]
         print('ratio area', ratio_0)
-        # max_t = target_boxes_list.max()
-        # print(max_t)
+        
+        [l.index(l) for i in l if l == 0]
+        [index for (index,value) in enumerate(target_boxes_list) if value == item]
 
         sas = []
         tas = []
