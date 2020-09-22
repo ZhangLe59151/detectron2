@@ -144,7 +144,7 @@ class Box2BoxTransform(object):
         
         for box in target_box:
             i = 0
-            for item in target_boxes_lis:
+            for item in target_boxes_list[0]:
                 if box.equal(item):
                     pass
         
