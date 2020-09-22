@@ -128,8 +128,8 @@ class Box2BoxTransform(object):
             need_add = False
             for item_box in target_box:
                 print('True? ', item_box.equal(item))
-                target_box.append(item)
-                number_of_target_box += 1
+            target_box.append(item)
+            number_of_target_box += 1
         print('number_of_target_box', number_of_target_box)
         print('target_box', target_box)
         # max_t = target_boxes_list.max()
