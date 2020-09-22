@@ -113,6 +113,37 @@ class Box2BoxTransform(object):
         # assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
         # return deltas
         return source_area, target_area
+    
+    def get_relative_areas_ratio(self, src_boxes_list, target_boxes_list, areas):
+        # assert isinstance(src_boxes, torch.Tensor), type(src_boxes)
+        # assert isinstance(target_boxes, torch.Tensor), type(target_boxes)
+        #get source weight height
+        assert isinstance(src_boxes_list, tuple)
+        assert isinstance(target_boxes_list, tuple)
+
+        sas = []
+        tas = []
+        tar_x_1 ,tar_x_2, tar_x_3, tar_x_4 = target_x.split([64,64,64,64], dim=0)
+        print(tar_x_1)
+
+        source_area = torch.cat(sas, dim=0)
+        target_area =  torch.cat(tas, dim=0)
+        '''
+        target_x = target_boxes[:, 0]
+        target_y = target_boxes[:, 1]
+        tar_x_1 ,tar_x_2, tar_x_3, tar_x_4 = target_x.split([64,64,64,64], dim=0)
+        tar_y_1 ,tar_y_2, tar_y_3, tar_y_4 = target_y.split([64,64,64,64], dim=0)
+        p_box_1 = tar_x_1 + tar_y_1 * 0.001
+        p_box_2 = tar_x_2 + tar_y_2 * 0.001
+        p_box_3 = tar_x_3 + tar_y_3 * 0.001
+        p_box_4 = tar_x_4 + tar_y_4 * 0.001
+        # print('pbox_1 :', p_box_1)
+        zero = torch.zeros_like(p_box_1)
+        p_box_new = p_box_1
+        '''
+        # assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
+        # return deltas
+        return source_area, target_area
 
     def apply_deltas(self, deltas, boxes):
         """
