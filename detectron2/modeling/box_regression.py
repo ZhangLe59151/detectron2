@@ -121,18 +121,19 @@ class Box2BoxTransform(object):
         assert isinstance(src_boxes_list, tuple)
         assert isinstance(target_boxes_list, tuple)
 
-        number_of_target_box = 0
-        target_box = []
-        # tar_x_1 ,tar_x_2, tar_x_3, tar_x_4 = target_boxes_list.split([64,64,64,64], dim=0)
-        for item in target_boxes_list[0]:
-            need_add = True
-            for item_box in target_box:
-                print('True? ', item_box.equal(item))
-                if item_box.equal(item):
-                    need_add = False
-            if need_add:
-                target_box.append(item)
-                number_of_target_box += 1
+        def get_box_num_and_item(target_boxes_list):
+            number_of_target_box = 0
+            target_box = []
+            for item in target_boxes_list[0]:
+                need_add = True
+                for item_box in target_box:
+                    if item_box.equal(item):
+                        need_add = False
+                if need_add:
+                    target_box.append(item)
+                    number_of_target_box += 1
+            return number_of_target_box, target_box
+        number_of_target_box, target_box = get_box_num_and_item(target_boxes_list)
         print('number_of_target_box', number_of_target_box)
         print('target_box', target_box)
         print('aera', areas[0])
