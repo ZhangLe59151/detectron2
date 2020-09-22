@@ -138,9 +138,9 @@ class Box2BoxTransform(object):
         area_0 = 0
         for item in target_box:
             print('item: ', item)
-            width = item[:, 2] - item[:, 0]
+            width = item[2] - item[0]
             print('width: ', width)
-            height = item[:, 3] - item[:, 1]
+            height = item[3] - item[1]
             print('height : ', height)
             area_0 = area_0 + width * height
         print('aera', areas[0])
