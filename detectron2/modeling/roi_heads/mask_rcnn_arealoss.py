@@ -325,7 +325,7 @@ class MyFastRCNNOutputs:
         split_gt_boxes = self.gt_boxes.tensor.split(self.num_preds_per_image, dim=0)
         source_area, target_area = self.box2box_transform.get_relative_areas(
                 predicted_boxes, split_gt_boxes, areas)
-        source_area, target_area = self.box2box_transform.get_relative_areas_ratio(predicted_boxes, split_gt_boxes, areas)
+        source_area, target_area = self.box2box_transform.get_relative_areas_ratio(predicted_boxes, split_gt_boxes, areas, self.pred_class_logits, self.gt_classes)
         # loss_box_area_reg = smooth_l1_loss(
         #         self.pred_proposal_deltas[fg_inds[:, None], gt_class_cols],
         #         gt_proposal_deltas[fg_inds],

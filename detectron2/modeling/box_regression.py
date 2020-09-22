@@ -114,12 +114,15 @@ class Box2BoxTransform(object):
         # return deltas
         return source_area, target_area
     
-    def get_relative_areas_ratio(self, src_boxes_list, target_boxes_list, areas):
+    def get_relative_areas_ratio(self, src_boxes_list, target_boxes_list, areas, pred_class_logits, gt_classes):
         # assert isinstance(src_boxes, torch.Tensor), type(src_boxes)
         # assert isinstance(target_boxes, torch.Tensor), type(target_boxes)
         #get source weight height
         assert isinstance(src_boxes_list, tuple)
         assert isinstance(target_boxes_list, tuple)
+
+        print('pred_class_logits', pred_class_logits)
+        print('gt_classes', gt_classes)
 
         number_of_target_box = 0
         target_box = []
@@ -133,14 +136,19 @@ class Box2BoxTransform(object):
             if need_add:
                 target_box.append(item)
                 number_of_target_box += 1
+            i += 1
         area_0 = 0
         for item in target_box:
             area_0 = area_0 + (item[2] - item[0]) * (item[3] - item[1])
         ratio_0 = area_0 / areas[0]
         print('ratio area', ratio_0)
         
-        [l.index(l) for i in l if l == 0]
-        [index for (index,value) in enumerate(target_boxes_list) if value == item]
+        for box in target_box:
+            i = 0
+            for item in target_boxes_lis:
+                if box.equal(item):
+
+        
 
         sas = []
         tas = []
