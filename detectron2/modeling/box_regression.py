@@ -125,6 +125,8 @@ class Box2BoxTransform(object):
         tas = []
         tar_x_1 ,tar_x_2, tar_x_3, tar_x_4 = target_boxes_list.split([64,64,64,64], dim=0)
         print(tar_x_1)
+        max_t = tar_x_1.max()
+        print(max_t)
 
         source_area = torch.cat(sas, dim=0)
         target_area =  torch.cat(tas, dim=0)
