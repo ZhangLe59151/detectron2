@@ -127,9 +127,7 @@ class Box2BoxTransform(object):
         for item in target_boxes_list[0]:
             need_add = False
             for item_box in target_box:
-                if (item_box.equal(item)):
-                    need_add = True
-            if (need_add == True):
+                print('True? ', item_box.equal(item))
                 target_box.append(item)
                 number_of_target_box += 1
         print('number_of_target_box', number_of_target_box)
