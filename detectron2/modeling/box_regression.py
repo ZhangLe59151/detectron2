@@ -125,8 +125,8 @@ class Box2BoxTransform(object):
         target_box = []
         # tar_x_1 ,tar_x_2, tar_x_3, tar_x_4 = target_boxes_list.split([64,64,64,64], dim=0)
         for item in target_boxes_list[0]:
-            print('item x: ', item[0])
-            print('item x: ', item[1])
+            for item_box in target_box:
+                print(item_box.eq(item))
             target_box.append(item)
             number_of_target_box += 1
         print('number_of_target_box', number_of_target_box)
