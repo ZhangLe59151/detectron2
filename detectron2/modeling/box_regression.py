@@ -124,12 +124,10 @@ class Box2BoxTransform(object):
         sas = []
         tas = []
         # tar_x_1 ,tar_x_2, tar_x_3, tar_x_4 = target_boxes_list.split([64,64,64,64], dim=0)
-        print(target_boxes_list)
+        print('target_boxes_list', target_boxes_list)
         # max_t = target_boxes_list.max()
         # print(max_t)
 
-        source_area = torch.cat(sas, dim=0)
-        target_area =  torch.cat(tas, dim=0)
         '''
         target_x = target_boxes[:, 0]
         target_y = target_boxes[:, 1]
