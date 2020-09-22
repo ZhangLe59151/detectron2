@@ -128,7 +128,6 @@ class Box2BoxTransform(object):
         for item in target_boxes_list[0]:
             need_add = True
             for item_box in target_box:
-                print('True? ', item_box.equal(item))
                 if item_box.equal(item):
                     need_add = False
             if need_add:
@@ -140,22 +139,27 @@ class Box2BoxTransform(object):
         # max_t = target_boxes_list.max()
         # print(max_t)
 
-        '''
-        target_x = target_boxes[:, 0]
-        target_y = target_boxes[:, 1]
-        tar_x_1 ,tar_x_2, tar_x_3, tar_x_4 = target_x.split([64,64,64,64], dim=0)
-        tar_y_1 ,tar_y_2, tar_y_3, tar_y_4 = target_y.split([64,64,64,64], dim=0)
-        p_box_1 = tar_x_1 + tar_y_1 * 0.001
-        p_box_2 = tar_x_2 + tar_y_2 * 0.001
-        p_box_3 = tar_x_3 + tar_y_3 * 0.001
-        p_box_4 = tar_x_4 + tar_y_4 * 0.001
-        # print('pbox_1 :', p_box_1)
-        zero = torch.zeros_like(p_box_1)
-        p_box_new = p_box_1
-        '''
+        sas = []
+        tas = []
+        for i in range(len(src_boxes_list)):
+            src_boxes = src_boxes_list[i]   
+            target_boxes = target_boxes_list[i]
+
+            src_widths = src_boxes[:, 2] - src_boxes[:, 0]
+            src_heights = src_boxes[:, 3] - src_boxes[:, 1]
+            #get target weight height
+            target_widths = target_boxes[:, 2] - target_boxes[:, 0]
+            target_heights = target_boxes[:, 3] - target_boxes[:, 1]
+            #caluate source area
+            sas.append(src_widths * src_heights / areas[i])
+            tas.append(target_widths * target_heights / areas[i])
+
+        source_area = torch.cat(sas, dim=0)
+        target_area =  torch.cat(tas, dim=0)
+
         # assert (src_widths > 0).all().item(), "Input boxes to Box2BoxTransform are not valid!"
         # return deltas
-        return src_boxes_list, src_boxes_list
+        return source_area, target_area
 
     def apply_deltas(self, deltas, boxes):
         """
