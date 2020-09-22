@@ -121,11 +121,15 @@ class Box2BoxTransform(object):
         assert isinstance(src_boxes_list, tuple)
         assert isinstance(target_boxes_list, tuple)
 
-        sas = []
-        tas = []
+        number_of_target_box = 0
+        target_box = []
         # tar_x_1 ,tar_x_2, tar_x_3, tar_x_4 = target_boxes_list.split([64,64,64,64], dim=0)
-        print('target_boxes_list 0 - 64', target_boxes_list[0])
-        print('target_boxes_list 65 - 132', target_boxes_list[1])
+        for item in target_boxes_list[0]:
+            print('item : ', item)
+            if item not in target_box:
+                target_box.append(item)
+                number_of_target_box += 1
+        print('number_of_target_box', number_of_target_box)
         # max_t = target_boxes_list.max()
         # print(max_t)
 
