@@ -135,6 +135,7 @@ class Box2BoxTransform(object):
                 number_of_target_box += 1
         print('number_of_target_box', number_of_target_box)
         print('target_box', target_box)
+        print('aera', areas[0])
         # max_t = target_boxes_list.max()
         # print(max_t)
 
