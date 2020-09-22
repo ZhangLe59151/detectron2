@@ -164,7 +164,7 @@ class MyFastRCNNOutputs:
             proposals (list[Instances]): A list of N Instances, where Instances i stores the
                 proposals for image i, in the field "proposal_boxes".
                 When training, each Instances must have ground-truth labels
-                stored in the field "gt_classes" and "gt_boxes".
+                stored in the field "gt_classes" and "gt_boxes" and "sampled_targets".
                 The total number of all instances must be equal to R.
             smooth_l1_beta (float): The transition point between L1 and L2 loss in
                 the smooth L1 loss function. When set to 0, the loss becomes L1. When
@@ -193,6 +193,8 @@ class MyFastRCNNOutputs:
                 self.gt_boxes = box_type.cat([p.gt_boxes for p in proposals])
                 assert proposals[0].has("gt_classes")
                 self.gt_classes = cat([p.gt_classes for p in proposals], dim=0)
+                assert proposals[0].has("sampled_targets"):
+                self.gt_sampled_targets = cat([p.sampled_targets for p in proposals], dim=0)
         else:
             self.proposals = Boxes(torch.zeros(0, 4, device=self.pred_proposal_deltas.device))
         self._no_instances = len(proposals) == 0  # no instances found

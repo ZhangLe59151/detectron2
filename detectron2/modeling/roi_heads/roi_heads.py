@@ -290,6 +290,8 @@ class ROIHeads(torch.nn.Module):
                 for (trg_name, trg_value) in targets_per_image.get_fields().items():
                     if trg_name.startswith("gt_") and not proposals_per_image.has(trg_name):
                         proposals_per_image.set(trg_name, trg_value[sampled_targets])
+                    if not proposals_per_image.has("sampled_targets"):
+                        proposals_per_image.set("sampled_targets", sampled_targets)
             else:
                 gt_boxes = Boxes(
                     targets_per_image.gt_boxes.tensor.new_zeros((len(sampled_idxs), 4))
