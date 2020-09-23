@@ -136,7 +136,7 @@ class Box2BoxTransform(object):
         prediction1 = prediction1[ignored_pairs]
         prediction2 = prediction2[ignored_pairs]
 
-        return ops.boxes.box_iou(prediction1[:, :4], axis=0, prediction2[:, :4], axis=0)
+        return ops.boxes.box_iou(prediction1[:, :4], axis=0, prediction2[:, :4])
 
     def get_relative_areas_ratio_1(self, src_boxes_list, target_boxes_list, areas, pred_class_logits, gt_classes, gt_sampled_targets):
         # assert isinstance(src_boxes, torch.Tensor), type(src_boxes)
