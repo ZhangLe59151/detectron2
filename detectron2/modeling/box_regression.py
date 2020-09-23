@@ -159,6 +159,7 @@ class Box2BoxTransform(object):
                         print('max ', score_num)
                     #    area_t = (src_boxes_list[0][i][2] - src_boxes_list[0][i][0]) * (src_boxes_list[0][i][3] - item[1])
             area_s = area_s + area_t
+            i += 1
         print('ratio sorce area', area_s)
 
         sas = []
