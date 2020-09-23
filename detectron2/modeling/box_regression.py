@@ -124,19 +124,21 @@ class Box2BoxTransform(object):
             gt_sampled_targets = gt_sampled_targets_list[i]
             src_boxes = src_boxes[fg_inds]
             gt_sampled_targets = gt_sampled_targets[fg_inds]
-            src_boxes = torch.cat([src_boxes, gt_sampled_targets], axis=1)
+            src_boxes = torch.cat([src_boxes, gt_sampled_targets], dim=1)
             for m in range(len(gt_sampled_targets)):
                 for n in range(len(gt_sampled_targets)):
                     prediction1.append(src_boxes[m])
                     prediction2.append(src_boxes[n])
 
-        prediction1 = torch.cat(prediction1, axis=0)
-        prediction2 = torch.cat(prediction2, axis=0)
-        ignored_pairs = prediction1.equal(prediction2)
+        print(prediction1.size())
+        prediction1 = torch.cat(prediction1, dim=0)
+        prediction2 = torch.cat(prediction2, dim=0)
+        ignored_pairs = prediction1.eq(prediction2)
         prediction1 = prediction1[ignored_pairs]
         prediction2 = prediction2[ignored_pairs]
+        print(prediction1.size())
 
-        return ops.boxes.box_iou(prediction1[:, :4], axis=0, prediction2[:, :4])
+        return ops.boxes.box_iou(prediction1[:, :4], prediction2[:, :4])
 
     def get_relative_areas_ratio_1(self, src_boxes_list, target_boxes_list, areas, pred_class_logits, gt_classes, gt_sampled_targets):
         # assert isinstance(src_boxes, torch.Tensor), type(src_boxes)

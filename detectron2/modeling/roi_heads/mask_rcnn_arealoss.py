@@ -344,7 +344,7 @@ class MyFastRCNNOutputs:
         #     )
         import pdb
         pdb.set_trace()
-        loss_iou = self.box2box_transform.iou_of_different_predictions(predicted_boxes, raw_fg_inds.split(self.num_preds_per_image, dim=0), gt_sampled_targets)
+        loss_iou = self.box2box_transform.iou_of_different_predictions(predicted_boxes, raw_fg_inds.split(self.num_preds_per_image, dim=0), self.gt_sampled_targets.split(self.num_preds_per_image, dim=0))
         loss_iou = loss_iou / self.gt_classes.numel()
         # loss_box_area_reg = loss_box_area_reg / self.gt_classes.numel()
         # why, no need to normalize the this loss to number of regions
