@@ -121,7 +121,7 @@ class Box2BoxTransform(object):
         assert isinstance(src_boxes_list, tuple)
         assert isinstance(target_boxes_list, tuple)
 
-        print('pred_class_logits', pred_class_logits)
+        # print('pred_class_logits', pred_class_logits)
         # print('gt_classes', gt_classes)
         # print('gt_sampled_targets', gt_sampled_targets)
 
@@ -142,7 +142,7 @@ class Box2BoxTransform(object):
             area_0 = area_0 + (item[2] - item[0]) * (item[3] - item[1])
         ratio_0 = area_0 / areas[0]
         print('target_box,', target_box)
-        print('img_area', areas)
+        print('img_area', areas[0])
         print('ratio area', ratio_0)
         
         score_num = 0 
@@ -152,7 +152,7 @@ class Box2BoxTransform(object):
             area_t = 0
             for item in target_boxes_list[0]:
                 if box.equal(item):
-                    print('pred_class_logits[i]', pred_class_logits[i])
+                    print('pred_class_logits[i]', pred_class_logits[i][0])
                     #if (torch.gt(pred_class_logits[i], score_num)):
                     #   score_num = pred_class_logits[i]
                     #    area_t = (src_boxes_list[0][i][2] - src_boxes_list[0][i][0]) * (src_boxes_list[0][i][3] - item[1])
