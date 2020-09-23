@@ -114,7 +114,7 @@ class Box2BoxTransform(object):
         # return deltas
         return source_area, target_area
     
-    def get_relative_areas_ratio(self, src_boxes_list, target_boxes_list, areas, pred_class_logits):
+    def get_relative_areas_ratio(self, src_boxes_list, target_boxes_list, areas, pred_class_logits, gt_classes):
         # assert isinstance(src_boxes, torch.Tensor), type(src_boxes)
         # assert isinstance(target_boxes, torch.Tensor), type(target_boxes)
         #get source weight height
