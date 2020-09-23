@@ -4,7 +4,7 @@ from typing import Tuple
 import torch
 import pdb, json
 import numpy as np
-
+import torchvision.ops as ops
 # Value for clamping large dw and dh predictions. The heuristic is that we clamp
 # such that dw and dh are no larger than what would transform a 16px box into a
 # 1000px box (based on a small anchor, 16px, and a typical image size, 1000px).
@@ -114,7 +114,27 @@ class Box2BoxTransform(object):
         # return deltas
         return source_area, target_area
     
-    def get_relative_areas_ratio(self, src_boxes_list, target_boxes_list, areas, pred_class_logits, gt_classes, gt_sampled_targets):
+    def iou_of_different_predictions(self, src_boxes_list, fg_inds_list, gt_sampled_targets_list):
+        assert isinstance(src_boxes_list, tuple)
+        prediction1 = []
+        prediction2 = []
+        for i in range(len(src_boxes_list)):
+            src_boxes = src_boxes_list[i]
+            fg_inds = fg_inds_list[i]
+            gt_sampled_targets = gt_sampled_targets_list[i]
+            src_boxes = src_boxes[fg_inds]
+            gt_sampled_targets = gt_sampled_targets[fg_inds]
+            for m in range(len(gt_sampled_targets)):
+                for n in range(len(gt_sampled_targets)):
+                    if not torch.equal(gt_sampled_targets[m], gt_sampled_targets[n]):
+                        prediction1.append(src_boxes[m])
+                        prediction2.append(src_boxes[n])
+        if not prediction1:
+            return 0.0
+
+        return ops.boxes.box_iou(torch.cat(prediction1, axis=0), torch.cat(prediction2, axis=0))
+
+    def get_relative_areas_ratio_1(self, src_boxes_list, target_boxes_list, areas, pred_class_logits, gt_classes, gt_sampled_targets):
         # assert isinstance(src_boxes, torch.Tensor), type(src_boxes)
         # assert isinstance(target_boxes, torch.Tensor), type(target_boxes)
         #get source weight height

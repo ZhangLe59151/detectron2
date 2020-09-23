@@ -314,7 +314,8 @@ class MyFastRCNNOutputs:
         cls_agnostic_bbox_reg = self.pred_proposal_deltas.size(1) == box_dim
         device = self.pred_proposal_deltas.device
         bg_class_ind = self.pred_class_logits.shape[1] - 1
-        fg_inds = nonzero_tuple((self.gt_classes >= 0) & (self.gt_classes < bg_class_ind))[0]
+        raw_fg_inds = (self.gt_classes >= 0) & (self.gt_classes < bg_class_ind)
+        fg_inds = nonzero_tuple(raw_fg_inds)[0]
         if cls_agnostic_bbox_reg:
             gt_class_cols = torch.arange(box_dim, device=device)
         else:
@@ -325,26 +326,30 @@ class MyFastRCNNOutputs:
 
         predicted_boxes = self.predict_boxes()
         split_gt_boxes = self.gt_boxes.tensor.split(self.num_preds_per_image, dim=0)
-        source_area, target_area = self.box2box_transform.get_relative_areas(
-                predicted_boxes, split_gt_boxes, areas)
-        source_area, target_area = self.box2box_transform.get_relative_areas_ratio(
-            predicted_boxes, split_gt_boxes, areas, self.pred_class_logits, self.gt_classes, self.gt_sampled_targets)
+        # source_area, target_area = self.box2box_transform.get_relative_areas(
+        #         predicted_boxes, split_gt_boxes, areas)
+        # source_area, target_area = self.box2box_transform.get_relative_areas_ratio(
+        #     predicted_boxes, split_gt_boxes, areas, self.pred_class_logits.split(self.num_preds_per_image, dim=0), self.gt_classes.split(self.num_preds_per_image, dim=0), self.gt_sampled_targets.split(self.num_preds_per_image, dim=0))
+        # # loss_box_area_reg = smooth_l1_loss(
+        # #         self.pred_proposal_deltas[fg_inds[:, None], gt_class_cols],
+        # #         gt_proposal_deltas[fg_inds],
+        # #         self.smooth_l1_beta,
+        # #         reduction="sum",
+        # #     )
         # loss_box_area_reg = smooth_l1_loss(
-        #         self.pred_proposal_deltas[fg_inds[:, None], gt_class_cols],
-        #         gt_proposal_deltas[fg_inds],
+        #         source_area[fg_inds],
+        #         target_area[fg_inds],
         #         self.smooth_l1_beta,
         #         reduction="sum",
         #     )
-        loss_box_area_reg = smooth_l1_loss(
-                source_area[fg_inds],
-                target_area[fg_inds],
-                self.smooth_l1_beta,
-                reduction="sum",
-            )
-        loss_box_area_reg = loss_box_area_reg / self.gt_classes.numel()
+        import pdb
+        pdb.set_trace()
+        loss_iou = self.box2box_transform.iou_of_different_predictions(predicted_boxes, raw_fg_inds.split(self.num_preds_per_image, dim=0), gt_sampled_targets)
+        loss_iou = loss_iou / self.gt_classes.numel()
+        # loss_box_area_reg = loss_box_area_reg / self.gt_classes.numel()
         # why, no need to normalize the this loss to number of regions
         # loss_box_area_reg = loss_box_area_reg / fg_inds.numel()
-        return loss_box_area_reg
+        return loss_iou
 
     def _predict_boxes(self):
         """
