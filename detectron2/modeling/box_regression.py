@@ -145,7 +145,7 @@ class Box2BoxTransform(object):
         print('img_area', areas[0])
         print('ratio area', ratio_0)
         
-        score_num = 0 
+        score_num = 1 
         area_s = 0
         for box in target_box:
             i = 0
