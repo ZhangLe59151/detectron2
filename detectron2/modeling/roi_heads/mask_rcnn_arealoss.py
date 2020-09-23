@@ -366,11 +366,12 @@ class MyFastRCNNOutputs:
                         prediction2.append(src_boxes[n])
                         gt_ind_list_2.append(gt_sampled_targets[n])
 
+            pdb.set_trace()
             prediction1 = torch.cat(prediction1, dim=0)
-            gt_ind_list_1 = torch.cat(gt_ind_list_1, dim=0)
+            gt_ind_list_1 = torch.stack(gt_ind_list_1)
             prediction2 = torch.cat(prediction2, dim=0)
-            gt_ind_list_2 = torch.cat(gt_ind_list_2, dim=0)
-            ignored_pairs = gt_ind_list_1.eq(gt_ind_list_2)
+            gt_ind_list_2 = torch.stack(gt_ind_list_2)
+            ignored_pairs = ~gt_ind_list_1.eq(gt_ind_list_2)
             prediction1 = prediction1[ignored_pairs]
             prediction2 = prediction2[ignored_pairs]
         except:
