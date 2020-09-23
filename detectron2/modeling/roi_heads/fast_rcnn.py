@@ -586,8 +586,7 @@ class FastRCNNOutputLayers(nn.Module):
         num_prop_per_image = [len(p) for p in proposals]
         proposal_boxes = [p.proposal_boxes for p in proposals]
         proposal_boxes = proposal_boxes[0].cat(proposal_boxes).tensor
-        predict_boxes = self.box2box_transform.apply_deltas(
+        predict_area = self.box2box_transform.apply_deltas(
             proposal_deltas, proposal_boxes
         )  # Nx(KxB)
-        area = 0
-        return area.split(num_prop_per_image)
+        return predict_area.split(num_prop_per_image)
