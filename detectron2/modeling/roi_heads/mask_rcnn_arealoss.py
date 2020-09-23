@@ -351,7 +351,7 @@ class MyFastRCNNOutputs:
             pdb.set_trace()
         if not losses:
             return 0.0 * self.pred_proposal_deltas.sum()
-        return torch.sum(torch.stack(losses)) / fg_inds.numel()
+        return torch.sum(torch.stack(losses))
 
     def _predict_boxes(self):
         """
