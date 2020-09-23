@@ -130,13 +130,11 @@ class Box2BoxTransform(object):
                     prediction1.append(src_boxes[m])
                     prediction2.append(src_boxes[n])
 
-        print(prediction1.size())
         prediction1 = torch.cat(prediction1, dim=0)
         prediction2 = torch.cat(prediction2, dim=0)
         ignored_pairs = prediction1.eq(prediction2)
         prediction1 = prediction1[ignored_pairs]
         prediction2 = prediction2[ignored_pairs]
-        print(prediction1.size())
 
         return ops.boxes.box_iou(prediction1[:, :4], prediction2[:, :4])
 
