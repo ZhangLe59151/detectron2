@@ -350,12 +350,12 @@ class MyFastRCNNOutputs:
                     gt_gj = gt_group_by_id[j].squeeze()
                     for k in range(j+1, len(gt_group_by_id)):
                         gt_gk = gt_group_by_id[k].squeeze()
-                        losses.append(torch.sum(ops.boxes.box_iou(src_boxes[gt_gj],src_boxes[gt_gj])))
+                        losses.append(torch.sum(ops.boxes.box_iou(src_boxes[gt_gj], src_boxes[gt_gk])))
         except:
             pdb.set_trace()
         pdb.set_trace()
         if not losses:
-            return 0.0 * predicted_boxes.sum()
+            return 0.0 * self.pred_proposal_deltas.sum()
         return torch.sum(torch.stack(losses)) / fg_inds.numel()
 
     def _predict_boxes(self):
