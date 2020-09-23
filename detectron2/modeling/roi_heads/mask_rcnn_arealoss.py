@@ -193,7 +193,7 @@ class MyFastRCNNOutputs:
                 self.gt_boxes = box_type.cat([p.gt_boxes for p in proposals])
                 assert proposals[0].has("gt_classes")
                 self.gt_classes = cat([p.gt_classes for p in proposals], dim=0)
-                assert proposals[0].has("sampled_targets"):
+                assert proposals[0].has("sampled_targets")
                 self.gt_sampled_targets = cat([p.sampled_targets for p in proposals], dim=0)
         else:
             self.proposals = Boxes(torch.zeros(0, 4, device=self.pred_proposal_deltas.device))
@@ -327,7 +327,8 @@ class MyFastRCNNOutputs:
         split_gt_boxes = self.gt_boxes.tensor.split(self.num_preds_per_image, dim=0)
         source_area, target_area = self.box2box_transform.get_relative_areas(
                 predicted_boxes, split_gt_boxes, areas)
-        source_area, target_area = self.box2box_transform.get_relative_areas_ratio(predicted_boxes, split_gt_boxes, areas, self.pred_class_logits, self.gt_classes)
+        source_area, target_area = self.box2box_transform.get_relative_areas_ratio(
+            predicted_boxes, split_gt_boxes, areas, self.pred_class_logits, self.gt_classes, self.gt_sampled_targets)
         # loss_box_area_reg = smooth_l1_loss(
         #         self.pred_proposal_deltas[fg_inds[:, None], gt_class_cols],
         #         gt_proposal_deltas[fg_inds],

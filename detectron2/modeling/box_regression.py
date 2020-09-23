@@ -123,6 +123,7 @@ class Box2BoxTransform(object):
 
         print('pred_class_logits', pred_class_logits)
         print('gt_classes', gt_classes)
+        print('gt_sampled_targets', gt_sampled_targets)
 
         number_of_target_box = 0
         target_box = []
