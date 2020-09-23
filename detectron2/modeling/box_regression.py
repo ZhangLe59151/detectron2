@@ -141,8 +141,6 @@ class Box2BoxTransform(object):
         for item in target_box:
             area_0 = area_0 + (item[2] - item[0]) * (item[3] - item[1])
         ratio_0 = area_0 / areas[0]
-        print('target_box,', target_box)
-        print('img_area', areas[0])
         print('ratio area', ratio_0)
         
         score_num = 1 
