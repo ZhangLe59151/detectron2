@@ -348,10 +348,12 @@ class MyFastRCNNOutputs:
         src_boxes_list = predicted_boxes
         fg_inds_list = raw_fg_inds.split(self.num_preds_per_image, dim=0)
         gt_sampled_targets_list = self.gt_sampled_targets.split(self.num_preds_per_image, dim=0)
-        prediction1 = []
-        prediction2 = []
-        gt_ind_list_1 = []
-        gt_ind_list_2 = []
+        # prediction1 = []
+        # prediction2 = []
+        # gt_ind_list_1 = []
+        # gt_ind_list_2 = []
+        import torchvision.ops as ops
+        losses = []
         try:
             for i in range(len(src_boxes_list)):
                 src_boxes = src_boxes_list[i]
@@ -359,27 +361,38 @@ class MyFastRCNNOutputs:
                 gt_sampled_targets = gt_sampled_targets_list[i]
                 src_boxes = src_boxes[fg_inds]
                 gt_sampled_targets = gt_sampled_targets[fg_inds]
-                for m in range(len(gt_sampled_targets)):
-                    for n in range(len(gt_sampled_targets)):
-                        prediction1.append(src_boxes[m])
-                        gt_ind_list_1.append(gt_sampled_targets[m])
-                        prediction2.append(src_boxes[n])
-                        gt_ind_list_2.append(gt_sampled_targets[n])
+                gt_id = gt_sampled_targets.unique()
+                gt_sampled_targets = gt_sampled_targets.unsqueeze(0)
+                gt_group_by_id = gt_sampled_targets == gt_id
+                gt_group_by_id = gt_group_by_id.split(1, dim=1)
+                for j in range(len(gt_group_by_id)):
+                    gt_gj = gt_group_by_id[j]
+                    for k in range(j+1, len(gt_group_by_id)):
+                        gt_gk = gt_group_by_id[k]
+                        losses.append(torch.sum(ops.boxes.box_iou(src_boxes[gt_gj],src_boxes[gt_gj])))
 
-            pdb.set_trace()
-            prediction1 = torch.stack(prediction1, dim=0)
-            gt_ind_list_1 = torch.stack(gt_ind_list_1)
-            prediction2 = torch.stack(prediction2, dim=0)
-            gt_ind_list_2 = torch.stack(gt_ind_list_2)
-            ignored_pairs = ~gt_ind_list_1.eq(gt_ind_list_2)
-            prediction1 = prediction1[ignored_pairs]
-            prediction2 = prediction2[ignored_pairs]
+                # for m in range(len(gt_sampled_targets)):
+                #     for n in range(m + 1, len(gt_sampled_targets)):
+                #         prediction1.append(src_boxes[m])
+                #         gt_ind_list_1.append(gt_sampled_targets[m])
+                #         prediction2.append(src_boxes[n])
+                #         gt_ind_list_2.append(gt_sampled_targets[n])
+
+            # pdb.set_trace()
+            # prediction1 = torch.stack(prediction1, dim=0)
+            # gt_ind_list_1 = torch.stack(gt_ind_list_1)
+            # prediction2 = torch.stack(prediction2, dim=0)
+            # gt_ind_list_2 = torch.stack(gt_ind_list_2)
+            # ignored_pairs = ~gt_ind_list_1.eq(gt_ind_list_2)
+            # prediction1 = prediction1[ignored_pairs]
+            # prediction2 = prediction2[ignored_pairs]
         except:
             pdb.set_trace()
         pdb.set_trace()
+        return 0.0
 
-        import torchvision.ops as ops
-        return torch.sum(ops.boxes.box_iou(prediction1[:, :4], prediction2[:, :4])) / fg_inds.numel()
+        # import torchvision.ops as ops
+        # return torch.sum(ops.boxes.box_iou(prediction1[:, :4], prediction2[:, :4])) / fg_inds.numel()
         # loss_iou = self.box2box_transform.iou_of_different_predictions(predicted_boxes, raw_fg_inds.split(self.num_preds_per_image, dim=0), self.gt_sampled_targets.split(self.num_preds_per_image, dim=0))
         # loss_iou = loss_iou / self.gt_classes.numel()
         # # loss_box_area_reg = loss_box_area_reg / self.gt_classes.numel()
