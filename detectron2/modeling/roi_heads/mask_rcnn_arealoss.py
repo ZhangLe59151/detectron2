@@ -344,12 +344,38 @@ class MyFastRCNNOutputs:
         #     )
         import pdb
         pdb.set_trace()
-        loss_iou = self.box2box_transform.iou_of_different_predictions(predicted_boxes, raw_fg_inds.split(self.num_preds_per_image, dim=0), self.gt_sampled_targets.split(self.num_preds_per_image, dim=0))
-        loss_iou = loss_iou / self.gt_classes.numel()
-        # loss_box_area_reg = loss_box_area_reg / self.gt_classes.numel()
-        # why, no need to normalize the this loss to number of regions
-        # loss_box_area_reg = loss_box_area_reg / fg_inds.numel()
-        return loss_iou
+
+        src_boxes_list = predicted_boxes
+        fg_inds_list = raw_fg_inds.split(self.num_preds_per_image, dim=0)
+        gt_sampled_targets_list = self.gt_sampled_targets.split(self.num_preds_per_image, dim=0)
+        prediction1 = []
+        prediction2 = []
+        for i in range(len(src_boxes_list)):
+            src_boxes = src_boxes_list[i]
+            fg_inds = fg_inds_list[i]
+            gt_sampled_targets = gt_sampled_targets_list[i]
+            src_boxes = src_boxes[fg_inds]
+            gt_sampled_targets = gt_sampled_targets[fg_inds]
+            src_boxes = torch.cat([src_boxes, gt_sampled_targets], dim=1)
+            for m in range(len(gt_sampled_targets)):
+                for n in range(len(gt_sampled_targets)):
+                    prediction1.append(src_boxes[m])
+                    prediction2.append(src_boxes[n])
+
+        prediction1 = torch.cat(prediction1, dim=0)
+        prediction2 = torch.cat(prediction2, dim=0)
+        ignored_pairs = prediction1.eq(prediction2)
+        prediction1 = prediction1[ignored_pairs]
+        prediction2 = prediction2[ignored_pairs]
+
+        import torchvision.ops as ops
+        return ops.boxes.box_iou(prediction1[:, :4], prediction2[:, :4])
+        # loss_iou = self.box2box_transform.iou_of_different_predictions(predicted_boxes, raw_fg_inds.split(self.num_preds_per_image, dim=0), self.gt_sampled_targets.split(self.num_preds_per_image, dim=0))
+        # loss_iou = loss_iou / self.gt_classes.numel()
+        # # loss_box_area_reg = loss_box_area_reg / self.gt_classes.numel()
+        # # why, no need to normalize the this loss to number of regions
+        # # loss_box_area_reg = loss_box_area_reg / fg_inds.numel()
+        # return loss_iou
 
     def _predict_boxes(self):
         """
