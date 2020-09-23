@@ -352,26 +352,30 @@ class MyFastRCNNOutputs:
         prediction2 = []
         gt_ind_list_1 = []
         gt_ind_list_2 = []
-        for i in range(len(src_boxes_list)):
-            src_boxes = src_boxes_list[i]
-            fg_inds = fg_inds_list[i]
-            gt_sampled_targets = gt_sampled_targets_list[i]
-            src_boxes = src_boxes[fg_inds]
-            gt_sampled_targets = gt_sampled_targets[fg_inds]
-            for m in range(len(gt_sampled_targets)):
-                for n in range(len(gt_sampled_targets)):
-                    prediction1.append(src_boxes[m])
-                    gt_ind_list_1.append(gt_sampled_targets[m])
-                    prediction2.append(src_boxes[n])
-                    gt_ind_list_2.append(gt_sampled_targets[n])
+        try:
+            for i in range(len(src_boxes_list)):
+                src_boxes = src_boxes_list[i]
+                fg_inds = fg_inds_list[i]
+                gt_sampled_targets = gt_sampled_targets_list[i]
+                src_boxes = src_boxes[fg_inds]
+                gt_sampled_targets = gt_sampled_targets[fg_inds]
+                for m in range(len(gt_sampled_targets)):
+                    for n in range(len(gt_sampled_targets)):
+                        prediction1.append(src_boxes[m])
+                        gt_ind_list_1.append(gt_sampled_targets[m])
+                        prediction2.append(src_boxes[n])
+                        gt_ind_list_2.append(gt_sampled_targets[n])
 
-        prediction1 = torch.cat(prediction1, dim=0)
-        gt_ind_list_1 = torch.cat(gt_ind_list_1, dim=0)
-        prediction2 = torch.cat(prediction2, dim=0)
-        gt_ind_list_2 = torch.cat(gt_ind_list_2, dim=0)
-        ignored_pairs = gt_ind_list_1.eq(gt_ind_list_2)
-        prediction1 = prediction1[ignored_pairs]
-        prediction2 = prediction2[ignored_pairs]
+            prediction1 = torch.cat(prediction1, dim=0)
+            gt_ind_list_1 = torch.cat(gt_ind_list_1, dim=0)
+            prediction2 = torch.cat(prediction2, dim=0)
+            gt_ind_list_2 = torch.cat(gt_ind_list_2, dim=0)
+            ignored_pairs = gt_ind_list_1.eq(gt_ind_list_2)
+            prediction1 = prediction1[ignored_pairs]
+            prediction2 = prediction2[ignored_pairs]
+        except:
+            pdb.set_trace()
+        pdb.set_trace()
 
         import torchvision.ops as ops
         return torch.sum(ops.boxes.box_iou(prediction1[:, :4], prediction2[:, :4])) / fg_inds.numel()
