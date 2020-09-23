@@ -153,8 +153,8 @@ class Box2BoxTransform(object):
             for item in target_boxes_list[0]:
                 if box.equal(item):
                     if (torch.gt(pred_class_logits[i][0], score_num)):
-                        print('max ', score_num)
                         score_num = pred_class_logits[i][0]
+                        print('max ', score_num)
                     #    area_t = (src_boxes_list[0][i][2] - src_boxes_list[0][i][0]) * (src_boxes_list[0][i][3] - item[1])
             area_s = area_s + area_t
         print('ratio sorce area', area_s)
