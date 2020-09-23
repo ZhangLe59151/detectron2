@@ -122,8 +122,8 @@ class Box2BoxTransform(object):
         assert isinstance(target_boxes_list, tuple)
 
         print('pred_class_logits', pred_class_logits)
-        print('gt_classes', gt_classes)
-        print('gt_sampled_targets', gt_sampled_targets)
+        # print('gt_classes', gt_classes)
+        # print('gt_sampled_targets', gt_sampled_targets)
 
         number_of_target_box = 0
         target_box = []
@@ -141,6 +141,8 @@ class Box2BoxTransform(object):
         for item in target_box:
             area_0 = area_0 + (item[2] - item[0]) * (item[3] - item[1])
         ratio_0 = area_0 / areas[0]
+        print('target_box,', target_box)
+        print('img_area', areas)
         print('ratio area', ratio_0)
         
         score_num = 0 
@@ -150,9 +152,10 @@ class Box2BoxTransform(object):
             area_t = 0
             for item in target_boxes_list[0]:
                 if box.equal(item):
-                    if (torch.gt(pred_class_logits[i], score_num)):
-                        score_num = pred_class_logits[i]
-                        area_t = (src_boxes_list[0][i][2] - src_boxes_list[0][i][0]) * (src_boxes_list[0][i][3] - item[1])
+                    print('pred_class_logits[i]', pred_class_logits[i])
+                    #if (torch.gt(pred_class_logits[i], score_num)):
+                    #   score_num = pred_class_logits[i]
+                    #    area_t = (src_boxes_list[0][i][2] - src_boxes_list[0][i][0]) * (src_boxes_list[0][i][3] - item[1])
             area_s = area_s + area_t
         print('ratio sorce area', area_s)
 
