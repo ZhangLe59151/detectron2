@@ -326,32 +326,13 @@ class MyFastRCNNOutputs:
 
         predicted_boxes = self.predict_boxes()
         split_gt_boxes = self.gt_boxes.tensor.split(self.num_preds_per_image, dim=0)
-        # source_area, target_area = self.box2box_transform.get_relative_areas(
-        #         predicted_boxes, split_gt_boxes, areas)
-        # source_area, target_area = self.box2box_transform.get_relative_areas_ratio(
-        #     predicted_boxes, split_gt_boxes, areas, self.pred_class_logits.split(self.num_preds_per_image, dim=0), self.gt_classes.split(self.num_preds_per_image, dim=0), self.gt_sampled_targets.split(self.num_preds_per_image, dim=0))
-        # # loss_box_area_reg = smooth_l1_loss(
-        # #         self.pred_proposal_deltas[fg_inds[:, None], gt_class_cols],
-        # #         gt_proposal_deltas[fg_inds],
-        # #         self.smooth_l1_beta,
-        # #         reduction="sum",
-        # #     )
-        # loss_box_area_reg = smooth_l1_loss(
-        #         source_area[fg_inds],
-        #         target_area[fg_inds],
-        #         self.smooth_l1_beta,
-        #         reduction="sum",
-        #     )
+
         import pdb
         pdb.set_trace()
 
         src_boxes_list = predicted_boxes
         fg_inds_list = raw_fg_inds.split(self.num_preds_per_image, dim=0)
         gt_sampled_targets_list = self.gt_sampled_targets.split(self.num_preds_per_image, dim=0)
-        # prediction1 = []
-        # prediction2 = []
-        # gt_ind_list_1 = []
-        # gt_ind_list_2 = []
         import torchvision.ops as ops
         losses = []
         try:
@@ -362,43 +343,20 @@ class MyFastRCNNOutputs:
                 src_boxes = src_boxes[fg_inds]
                 gt_sampled_targets = gt_sampled_targets[fg_inds]
                 gt_id = gt_sampled_targets.unique()
-                gt_sampled_targets = gt_sampled_targets.unsqueeze(0)
+                gt_sampled_targets = gt_sampled_targets.view(-1, 1)
                 gt_group_by_id = gt_sampled_targets == gt_id
                 gt_group_by_id = gt_group_by_id.split(1, dim=1)
                 for j in range(len(gt_group_by_id)):
-                    gt_gj = gt_group_by_id[j]
+                    gt_gj = gt_group_by_id[j].squeeze()
                     for k in range(j+1, len(gt_group_by_id)):
-                        gt_gk = gt_group_by_id[k]
+                        gt_gk = gt_group_by_id[k].squeeze()
                         losses.append(torch.sum(ops.boxes.box_iou(src_boxes[gt_gj],src_boxes[gt_gj])))
-
-                # for m in range(len(gt_sampled_targets)):
-                #     for n in range(m + 1, len(gt_sampled_targets)):
-                #         prediction1.append(src_boxes[m])
-                #         gt_ind_list_1.append(gt_sampled_targets[m])
-                #         prediction2.append(src_boxes[n])
-                #         gt_ind_list_2.append(gt_sampled_targets[n])
-
-            # pdb.set_trace()
-            # prediction1 = torch.stack(prediction1, dim=0)
-            # gt_ind_list_1 = torch.stack(gt_ind_list_1)
-            # prediction2 = torch.stack(prediction2, dim=0)
-            # gt_ind_list_2 = torch.stack(gt_ind_list_2)
-            # ignored_pairs = ~gt_ind_list_1.eq(gt_ind_list_2)
-            # prediction1 = prediction1[ignored_pairs]
-            # prediction2 = prediction2[ignored_pairs]
         except:
             pdb.set_trace()
         pdb.set_trace()
-        return 0.0
-
-        # import torchvision.ops as ops
-        # return torch.sum(ops.boxes.box_iou(prediction1[:, :4], prediction2[:, :4])) / fg_inds.numel()
-        # loss_iou = self.box2box_transform.iou_of_different_predictions(predicted_boxes, raw_fg_inds.split(self.num_preds_per_image, dim=0), self.gt_sampled_targets.split(self.num_preds_per_image, dim=0))
-        # loss_iou = loss_iou / self.gt_classes.numel()
-        # # loss_box_area_reg = loss_box_area_reg / self.gt_classes.numel()
-        # # why, no need to normalize the this loss to number of regions
-        # # loss_box_area_reg = loss_box_area_reg / fg_inds.numel()
-        # return loss_iou
+        if not losses:
+            return 0.0 * predicted_boxes.sum()
+        return torch.sum(torch.stack(losses)) / fg_inds.numel()
 
     def _predict_boxes(self):
         """
