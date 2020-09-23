@@ -43,7 +43,7 @@ Naming convention:
 """
 
 
-def fast_rcnn_inference(boxes, scores, image_shapes, score_thresh, nms_thresh, topk_per_image):
+def fast_rcnn_inference(boxes, scores, area, image_shapes, score_thresh, nms_thresh, topk_per_image):
     """
     Call `fast_rcnn_inference_single_image` for all images.
 
@@ -73,7 +73,7 @@ def fast_rcnn_inference(boxes, scores, image_shapes, score_thresh, nms_thresh, t
         fast_rcnn_inference_single_image(
             boxes_per_image, scores_per_image, image_shape, score_thresh, nms_thresh, topk_per_image
         )
-        for scores_per_image, boxes_per_image, image_shape in zip(scores, boxes, image_shapes)
+        for scores_per_image, boxes_per_image, image_shape in zip(scores, boxes, area, image_shapes)
     ]
     return [x[0] for x in result_per_image], [x[1] for x in result_per_image]
 
@@ -333,15 +333,21 @@ class FastRCNNOutputs:
         probs = F.softmax(self.pred_class_logits, dim=-1)
         return probs.split(self.num_preds_per_image, dim=0)
 
+    def predict_area(self):
+        area = 0
+        print('self._predict_boxes()', self._predict_boxes())
+        return self._predict_boxes().split(self.num_preds_per_image, dim=0)
+
     def inference(self, score_thresh, nms_thresh, topk_per_image):
         """
         Deprecated
         """
         boxes = self.predict_boxes()
         scores = self.predict_probs()
+        area = self.predict_area()
         image_shapes = self.image_shapes
         return fast_rcnn_inference(
-            boxes, scores, image_shapes, score_thresh, nms_thresh, topk_per_image
+            boxes, scores, area, image_shapes, score_thresh, nms_thresh, topk_per_image
         )
 
 
@@ -484,10 +490,12 @@ class FastRCNNOutputLayers(nn.Module):
         """
         boxes = self.predict_boxes(predictions, proposals)
         scores = self.predict_probs(predictions, proposals)
+        area = self.predict_area(predictions, proposals)
         image_shapes = [x.image_size for x in proposals]
         return fast_rcnn_inference(
             boxes,
             scores,
+            area,
             image_shapes,
             self.test_score_thresh,
             self.test_nms_thresh,
@@ -570,3 +578,16 @@ class FastRCNNOutputLayers(nn.Module):
         num_inst_per_image = [len(p) for p in proposals]
         probs = F.softmax(scores, dim=-1)
         return probs.split(num_inst_per_image, dim=0)
+
+    def predict_area(self, predictions, proposals):
+        if not len(proposals):
+            return []
+        _, proposal_deltas = predictions
+        num_prop_per_image = [len(p) for p in proposals]
+        proposal_boxes = [p.proposal_boxes for p in proposals]
+        proposal_boxes = proposal_boxes[0].cat(proposal_boxes).tensor
+        predict_boxes = self.box2box_transform.apply_deltas(
+            proposal_deltas, proposal_boxes
+        )  # Nx(KxB)
+        area = 0
+        return area.split(num_prop_per_image)
