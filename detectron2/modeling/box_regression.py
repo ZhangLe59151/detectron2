@@ -152,7 +152,7 @@ class Box2BoxTransform(object):
             area_t = 0
             for item in target_boxes_list[0]:
                 if box.equal(item):
-                    print('pred_class_logits[i][0]', pred_class_logits[i][0])
+                    print('pred_class_logits[i][0]', pred_class_logits[i])
                     if (torch.gt(pred_class_logits[i][0], score_num)):
                         score_num = pred_class_logits[i][0]
                         print('max ', score_num)
