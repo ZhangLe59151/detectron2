@@ -143,15 +143,14 @@ class Box2BoxTransform(object):
         ratio_0 = area_0 / areas[0]
         print('ratio area', ratio_0)
         
-        score_num = 1 
+        score_num = 0
         area_s = 0
         for box in target_box:
             i = 0
             area_t = 0
             for item in target_boxes_list[0]:
                 if box.equal(item):
-                    if torch.gt(pred_class_logits[i][0], score_num):
-                        print('and torch.gt(pred_class_logits[i][0], pred_class_logits[i][1]', pred_class_logits[i])
+                    if (torch.gt(pred_class_logits[i][0], score_num) and torch.gt(pred_class_logits[i][0], pred_class_logits[i][1])):
                         score_num = pred_class_logits[i][0]
                         print('closed pre box score : ', score_num)
                         print('closed pre box: ', src_boxes_list[0][i])
