@@ -5,6 +5,7 @@
 import logging
 from typing import Dict, Union
 import torch
+import torchvision.ops as ops
 from fvcore.nn import giou_loss, smooth_l1_loss
 from torch import nn
 from torch.nn import functional as F
@@ -327,17 +328,12 @@ class MyFastRCNNOutputs:
         predicted_boxes = self.predict_boxes()
         split_gt_boxes = self.gt_boxes.tensor.split(self.num_preds_per_image, dim=0)
 
-        import pdb
-        pdb.set_trace()
-
-        src_boxes_list = predicted_boxes
         fg_inds_list = raw_fg_inds.split(self.num_preds_per_image, dim=0)
         gt_sampled_targets_list = self.gt_sampled_targets.split(self.num_preds_per_image, dim=0)
-        import torchvision.ops as ops
         losses = []
         try:
-            for i in range(len(src_boxes_list)):
-                src_boxes = src_boxes_list[i]
+            for i in range(len(predicted_boxes)):
+                src_boxes = predicted_boxes[i]
                 fg_inds = fg_inds_list[i]
                 gt_sampled_targets = gt_sampled_targets_list[i]
                 src_boxes = src_boxes[fg_inds]
@@ -353,7 +349,6 @@ class MyFastRCNNOutputs:
                         losses.append(torch.sum(ops.boxes.box_iou(src_boxes[gt_gj], src_boxes[gt_gk])))
         except:
             pdb.set_trace()
-        pdb.set_trace()
         if not losses:
             return 0.0 * self.pred_proposal_deltas.sum()
         return torch.sum(torch.stack(losses)) / fg_inds.numel()
