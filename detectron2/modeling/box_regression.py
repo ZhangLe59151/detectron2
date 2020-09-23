@@ -156,7 +156,7 @@ class Box2BoxTransform(object):
                 i += 1
                 print('closed box area : ', area_t)
             area_s = area_s + area_t
-        print('ratio sorce area', area_s/ areas[0])
+        print('ratio sorce area', area_s)
 
         sas = []
         tas = []
