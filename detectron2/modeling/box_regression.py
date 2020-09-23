@@ -149,9 +149,9 @@ class Box2BoxTransform(object):
             area_t = 0
             for item in target_boxes_list[0]:
                 if box.equal(item):
-                    if torch.gt(pred_class_logits[i], score_num):
+                    if (torch.gt(pred_class_logits[i], score_num) && th > 0.7):
                         score_num = pred_class_logits[i]
-                        area_t = area_t + (src_boxes_list[0][i][2] - src_boxes_list[0][i][0]) * (src_boxes_list[0][i][3] - item[1])
+                        area_t = (src_boxes_list[0][i][2] - src_boxes_list[0][i][0]) * (src_boxes_list[0][i][3] - item[1])
             area_s = area_s + area_t
         print('ratio sorce area', area_s)
 
