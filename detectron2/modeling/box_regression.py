@@ -154,6 +154,7 @@ class Box2BoxTransform(object):
                         score_num = pred_class_logits[i][0]
                         area_t = (src_boxes_list[0][i][2] - src_boxes_list[0][i][0]) * (src_boxes_list[0][i][3] - item[1])
                 i += 1
+            print('area_t: ', area_t)
             area_s = area_s + area_t
         area_0_pre = area_s/ areas[0]
         print('ratio sorce area', area_0_pre)
