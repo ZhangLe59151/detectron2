@@ -1011,10 +1011,11 @@ class MyAreaROIHeads(ROIHeads):
         if self.training:
             assert targets
             proposals = self.label_and_sample_proposals(proposals, targets)
-        del targets
+        # del targets
 
         if self.training:
             losses = self._forward_box(features, proposals, images, targets)
+            del targets
             # Usually the original proposals used by the box head are used by the mask, keypoint
             # heads. But when `self.train_on_pred_boxes is True`, proposals will contain boxes
             # predicted by the box head.
@@ -1022,6 +1023,7 @@ class MyAreaROIHeads(ROIHeads):
             losses.update(self._forward_keypoint(features, proposals))
             return proposals, losses
         else:
+            del targets
             pred_instances = self._forward_box(features, proposals)
             # During inference cascaded prediction is used: the mask and keypoints heads are only
             # applied to the top scoring box detections.
