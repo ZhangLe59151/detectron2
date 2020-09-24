@@ -398,7 +398,7 @@ class MyFastRCNNOutputLayers(nn.Module):
         box_dim = len(box2box_transform.weights)
         self.bbox_pred = Linear(input_size, num_bbox_reg_classes * box_dim)
         # add one more layer
-        self.area_pred = Linear(area, num_bbox_reg_classes)
+        self.area_pred = Linear(input_size, 1)
 
         nn.init.normal_(self.cls_score.weight, std=0.01)
         nn.init.normal_(self.bbox_pred.weight, std=0.001)
@@ -450,7 +450,8 @@ class MyFastRCNNOutputLayers(nn.Module):
             x = torch.flatten(x, start_dim=1)
         scores = self.cls_score(x)
         proposal_deltas = self.bbox_pred(x)
-        return scores, proposal_deltas
+        area_ratio = self.area_pred(x)
+        return scores, proposal_deltas, area_ratio
 
     # TODO: move the implementation to this class.
     def losses(self, predictions, proposals):
@@ -474,6 +475,16 @@ class MyFastRCNNOutputLayers(nn.Module):
             self.box_reg_loss_type,
         ).losses()
         return {k: v * self.loss_weight.get(k, 1.0) for k, v in losses.items()}
+
+    def losses2(self, pred_area_ratio, images, targets):
+        real_ratio = 0
+        loss_area = smooth_l1_loss(
+                pred_area_ratio,
+                real_ratio,
+                self.smooth_l1_beta,
+                reduction="sum",
+            )
+        return {"area_ratio": loss_area}
 
     def inference(self, predictions, proposals):
         """

@@ -21,8 +21,9 @@ from .box_head import build_box_head
 from .fast_rcnn import FastRCNNOutputLayers
 from .keypoint_head import build_keypoint_head
 from .mask_head import build_mask_head
-from .area_head import build_area_head
-from .new_fc_rcnn import MyFastRCNNOutputLayers
+
+from .mask_rcnn_arealoss import AMaskRCNNOutputLayers
+import pdb, json
 
 ROI_HEADS_REGISTRY = Registry("ROI_HEADS")
 ROI_HEADS_REGISTRY.__doc__ = """
@@ -289,6 +290,8 @@ class ROIHeads(torch.nn.Module):
                 for (trg_name, trg_value) in targets_per_image.get_fields().items():
                     if trg_name.startswith("gt_") and not proposals_per_image.has(trg_name):
                         proposals_per_image.set(trg_name, trg_value[sampled_targets])
+                    if not proposals_per_image.has("sampled_targets"):
+                        proposals_per_image.set("sampled_targets", sampled_targets)
             else:
                 gt_boxes = Boxes(
                     targets_per_image.gt_boxes.tensor.new_zeros((len(sampled_idxs), 4))
@@ -373,7 +376,7 @@ class Res5ROIHeads(ROIHeads):
         )
 
         self.res5, out_channels = self._build_res5_block(cfg)
-        self.box_predictor = MyFastRCNNOutputLayers(
+        self.box_predictor = FastRCNNOutputLayers(
             cfg, ShapeSpec(channels=out_channels, height=1, width=1)
         )
 
@@ -588,7 +591,8 @@ class StandardROIHeads(ROIHeads):
         box_head = build_box_head(
             cfg, ShapeSpec(channels=in_channels, height=pooler_resolution, width=pooler_resolution)
         )
-        box_predictor = MyFastRCNNOutputLayers(cfg, box_head.output_shape)
+        # add debug
+        box_predictor = FastRCNNOutputLayers(cfg, box_head.output_shape)
         return {
             "box_in_features": in_features,
             "box_pooler": box_pooler,
@@ -842,7 +846,6 @@ class MyAreaROIHeads(ROIHeads):
         keypoint_pooler: Optional[ROIPooler] = None,
         keypoint_head: Optional[nn.Module] = None,
         train_on_pred_boxes: bool = False,
-        area_head: Optional[nn.Module],
         **kwargs
     ):
         """
@@ -868,7 +871,6 @@ class MyAreaROIHeads(ROIHeads):
         self.box_pooler = box_pooler
         self.box_head = box_head
         self.box_predictor = box_predictor
-        self.area_head = area_head
 
         self.mask_on = mask_in_features is not None
         if self.mask_on:
@@ -898,8 +900,6 @@ class MyAreaROIHeads(ROIHeads):
             ret.update(cls._init_mask_head(cfg, input_shape))
         if inspect.ismethod(cls._init_keypoint_head):
             ret.update(cls._init_keypoint_head(cfg, input_shape))
-        if inspect.ismethod(cls._init_area_head):
-            ret.update(cls._init_area_head(cfg, input_shape))
         return ret
 
     @classmethod
@@ -931,44 +931,14 @@ class MyAreaROIHeads(ROIHeads):
         box_head = build_box_head(
             cfg, ShapeSpec(channels=in_channels, height=pooler_resolution, width=pooler_resolution)
         )
-        box_predictor = FastRCNNOutputLayers(cfg, box_head.output_shape)
+        # add debug
+        box_predictor = AMaskRCNNOutputLayers(cfg, box_head.output_shape)
         return {
             "box_in_features": in_features,
             "box_pooler": box_pooler,
             "box_head": box_head,
             "box_predictor": box_predictor,
         }
-    
-    @classmethod
-    def _init_area_head(cls, cfg, input_shape):
-        # fmt: off
-        in_features       = cfg.MODEL.ROI_HEADS.IN_FEATURES
-        pooler_resolution = cfg.MODEL.ROI_BOX_HEAD.POOLER_RESOLUTION
-        pooler_scales     = tuple(1.0 / input_shape[k].stride for k in in_features)
-        sampling_ratio    = cfg.MODEL.ROI_BOX_HEAD.POOLER_SAMPLING_RATIO
-        pooler_type       = cfg.MODEL.ROI_BOX_HEAD.POOLER_TYPE
-        # fmt: on
-
-        # If StandardROIHeads is applied on multiple feature maps (as in FPN),
-        # then we share the same predictors and therefore the channel counts must be the same
-        in_channels = [input_shape[f].channels for f in in_features]
-        # Check all channel counts are equal
-        assert len(set(in_channels)) == 1, in_channels
-        in_channels = in_channels[0]
-
-        box_pooler = ROIPooler(
-            output_size=pooler_resolution,
-            scales=pooler_scales,
-            sampling_ratio=sampling_ratio,
-            pooler_type=pooler_type,
-        )
-        # Here we split "box head" and "box predictor", which is mainly due to historical reasons.
-        # They are used together so the "box predictor" layers should be part of the "box head".
-        # New subclasses of ROIHeads do not need "box predictor"s.
-        area_head = build_area_head(
-            cfg, ShapeSpec(channels=in_channels, height=pooler_resolution, width=pooler_resolution)
-        )
-        return area_head
 
     @classmethod
     def _init_mask_head(cls, cfg, input_shape):
@@ -1032,18 +1002,22 @@ class MyAreaROIHeads(ROIHeads):
         """
         See :class:`ROIHeads.forward`.
         """
-        del images
+        # json_str = json.dumps(images.image_sizes)
+        # with open('file.json', 'w') as f:
+        #     json.dump(images.image_sizes, f)
+            # print('write into completed.')
+
+        #del images
         if self.training:
             assert targets
-            proposals = self.label_and_sample_proposals(proposals, targets)
+            proposals = self.label_and_sample_proposals(proposals)
         del targets
 
         if self.training:
-            losses = self._forward_box(features, proposals)
+            losses = self._forward_box(features, proposals, images, targets)
             # Usually the original proposals used by the box head are used by the mask, keypoint
             # heads. But when `self.train_on_pred_boxes is True`, proposals will contain boxes
             # predicted by the box head.
-            losses.update(self._forward_area(features, proposals))
             losses.update(self._forward_mask(features, proposals))
             losses.update(self._forward_keypoint(features, proposals))
             return proposals, losses
@@ -1082,7 +1056,7 @@ class MyAreaROIHeads(ROIHeads):
         return instances
 
     def _forward_box(
-        self, features: Dict[str, torch.Tensor], proposals: List[Instances]
+        self, features: Dict[str, torch.Tensor], proposals: List[Instances], images, targets
     ) -> Union[Dict[str, torch.Tensor], List[Instances]]:
         """
         Forward logic of the box prediction branch. If `self.train_on_pred_boxes is True`,
@@ -1104,37 +1078,13 @@ class MyAreaROIHeads(ROIHeads):
         box_features = self.box_pooler(features, [x.proposal_boxes for x in proposals])
         box_features = self.box_head(box_features)
         predictions = self.box_predictor(box_features)
+        scores, proposal_deltas, area_ratio = self.box_predictor(box_features)
+        predictions = (scores, proposal_deltas)
         del box_features
 
         if self.training:
             losses = self.box_predictor.losses(predictions, proposals)
-            # proposals is modified in-place below, so losses must be computed first.
-            if self.train_on_pred_boxes:
-                with torch.no_grad():
-                    pred_boxes = self.box_predictor.predict_boxes_for_gt_classes(
-                        predictions, proposals
-                    )
-                    for proposals_per_image, pred_boxes_per_image in zip(proposals, pred_boxes):
-                        proposals_per_image.proposal_boxes = Boxes(pred_boxes_per_image)
-            return losses
-        else:
-            pred_instances, _ = self.box_predictor.inference(predictions, proposals)
-            return pred_instances
-    
-    def _forward_area(
-        self, features: Dict[str, torch.Tensor], proposals: List[Instances]
-    ) -> Union[Dict[str, torch.Tensor], List[Instances]]:
-        features = [features[f] for f in self.box_in_features]
-        box_features = self.box_pooler(features, [x.proposal_boxes for x in proposals])
-        box_features = self.box_head(box_features)
-        # here add
-        print('box_features :', box_features)
-        area_ratio = self.area_head(box_features)
-        predictions = self.box_predictor(area_ratio)
-        del box_features
-
-        if self.training:
-            losses = self.box_predictor.losses(predictions, proposals)
+            losses.update(self.box_predictor.losses2(area_ratio, images, targets))
             # proposals is modified in-place below, so losses must be computed first.
             if self.train_on_pred_boxes:
                 with torch.no_grad():
@@ -1215,3 +1165,4 @@ class MyAreaROIHeads(ROIHeads):
             pred_boxes = [x.pred_boxes for x in instances]
             keypoint_features = self.keypoint_pooler(features, pred_boxes)
             return self.keypoint_head(keypoint_features, instances)
+
