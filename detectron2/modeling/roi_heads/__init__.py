@@ -15,6 +15,5 @@ from .rotated_fast_rcnn import RROIHeads
 from .fast_rcnn import FastRCNNOutputLayers
 
 from . import cascade_rcnn  # isort:skip
-from .area_head import ROI_AREA_HEAD_REGISTRY, build_area_head
 
 __all__ = list(globals().keys())
