@@ -343,10 +343,10 @@ class MyFastRCNNOutputs:
                 gt_group_by_id = gt_sampled_targets == gt_id
                 gt_group_by_id = gt_group_by_id.split(1, dim=1)
                 for j in range(len(gt_group_by_id)):
-                    gt_gj = gt_group_by_id[j].view(-1, 1)
+                    gt_gj = gt_group_by_id[j].flatten()
                     losses.append(torch.sum(1 - ops.boxes.box_iou(src_boxes[gt_gj], src_boxes[gt_gj])))
                     for k in range(j+1, len(gt_group_by_id)):
-                        gt_gk = gt_group_by_id[k].view(-1, 1)
+                        gt_gk = gt_group_by_id[k].flatten()
                         losses.append(torch.sum(ops.boxes.box_iou(src_boxes[gt_gj], src_boxes[gt_gk])))
         except Exception as e:
             pdb.set_trace()
