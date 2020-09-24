@@ -932,7 +932,7 @@ class MyAreaROIHeads(ROIHeads):
             cfg, ShapeSpec(channels=in_channels, height=pooler_resolution, width=pooler_resolution)
         )
         # add debug
-        box_predictor = MyMaskRCNNOutputLayers(cfg, box_head.output_shape)
+        box_predictor = MyFastRCNNOutputLayers(cfg, box_head.output_shape)
         return {
             "box_in_features": in_features,
             "box_pooler": box_pooler,
