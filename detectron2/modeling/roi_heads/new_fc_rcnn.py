@@ -480,8 +480,8 @@ class MyFastRCNNOutputLayers(nn.Module):
         real_ratio_list = []
         import pdb; pdb.set_trace()
         for image, target in zip(images, targets):
-            width = target.gt_boxes[:, 2] - target.gt_boxes[:, 0]
-            height = target.gt_boxes[:, 3] - target.gt_boxes[:, 1]
+            width = target.gt_boxes.tensor[:, 2] - target.gt_boxes.tensor[:, 0]
+            height = target.gt_boxes.tensor[:, 3] - target.gt_boxes.tensor[:, 1]
             real_ratio = width * height / image.width * image.height
             real_ratio_list.append(real_ratio)
         real_ratio_list = torch.stack(real_ratio_list)      
