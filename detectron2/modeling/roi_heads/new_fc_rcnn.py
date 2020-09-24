@@ -478,13 +478,15 @@ class MyFastRCNNOutputLayers(nn.Module):
 
     def losses2(self, pred_area_ratio, images, targets):
         real_ratio_list = []
-        import pdb; pdb.set_trace()
-        for image, target in zip(images, targets):
-            width = target.gt_boxes.tensor[:, 2] - target.gt_boxes.tensor[:, 0]
-            height = target.gt_boxes.tensor[:, 3] - target.gt_boxes.tensor[:, 1]
-            w, h = target._image_size
-            real_ratio = (width * height) / (w * h)
-            real_ratio_list.append(real_ratio)
+        try:
+            for target in targets:
+                width = target.gt_boxes.tensor[:, 2] - target.gt_boxes.tensor[:, 0]
+                height = target.gt_boxes.tensor[:, 3] - target.gt_boxes.tensor[:, 1]
+                w, h = target._image_size
+                real_ratio = (width * height) / (w * h)
+                real_ratio_list.append(real_ratio)
+        except:
+            import pdb; pdb.set_trace()
         real_ratio_list = torch.stack(real_ratio_list)      
         loss_area = smooth_l1_loss(
                 pred_area_ratio,
