@@ -483,7 +483,7 @@ class MyFastRCNNOutputLayers(nn.Module):
             width = target.gt_boxes.tensor[:, 2] - target.gt_boxes.tensor[:, 0]
             height = target.gt_boxes.tensor[:, 3] - target.gt_boxes.tensor[:, 1]
             w, h = target._image_size
-            real_ratio = width * height / w * h
+            real_ratio = (width * height) / (w * h)
             real_ratio_list.append(real_ratio)
         real_ratio_list = torch.stack(real_ratio_list)      
         loss_area = smooth_l1_loss(
