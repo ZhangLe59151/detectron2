@@ -398,7 +398,8 @@ class MyFastRCNNOutputLayers(nn.Module):
         box_dim = len(box2box_transform.weights)
         self.bbox_pred = Linear(input_size, num_bbox_reg_classes * box_dim)
         # add one more layer
-        self.area_pred = Linear(input_size, 1)
+        self.area_pred_input_size = 64 * input_size
+        self.area_pred = Linear(self.area_pred_input_size, 1)
 
         nn.init.normal_(self.cls_score.weight, std=0.01)
         nn.init.normal_(self.bbox_pred.weight, std=0.001)
@@ -450,7 +451,7 @@ class MyFastRCNNOutputLayers(nn.Module):
             x = torch.flatten(x, start_dim=1)
         scores = self.cls_score(x)
         proposal_deltas = self.bbox_pred(x)
-        area_ratio = self.area_pred(x)
+        area_ratio = self.area_pred(x.view(4, self.area_pred_input_size))
         return scores, proposal_deltas, area_ratio
 
     # TODO: move the implementation to this class.
