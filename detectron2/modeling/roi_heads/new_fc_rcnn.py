@@ -478,9 +478,9 @@ class MyFastRCNNOutputLayers(nn.Module):
 
     def losses2(self, pred_area_ratio, images, targets):
         gt_boxes = [x.gt_boxes for x in targets]
+        import pdb; pdb.set_trace()
         width = gt_boxes[:, 2] - gt_boxes[:, 0]
         print('width: ',width)
-        import pdb; pdb.set_trace()
         real_ratio = width * (gt_boxes[:, 3] - gt_boxes[:, 1]) / images.width * images.height
         loss_area = smooth_l1_loss(
                 pred_area_ratio,
