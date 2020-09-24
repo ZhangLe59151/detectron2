@@ -43,7 +43,7 @@ Naming convention:
 """
 
 
-def fast_rcnn_inference(boxes, scores, area, image_shapes, score_thresh, nms_thresh, topk_per_image):
+def fast_rcnn_inference(boxes, scores, image_shapes, score_thresh, nms_thresh, topk_per_image):
     """
     Call `fast_rcnn_inference_single_image` for all images.
 
@@ -73,7 +73,7 @@ def fast_rcnn_inference(boxes, scores, area, image_shapes, score_thresh, nms_thr
         fast_rcnn_inference_single_image(
             boxes_per_image, scores_per_image, image_shape, score_thresh, nms_thresh, topk_per_image
         )
-        for scores_per_image, boxes_per_image, image_shape in zip(scores, boxes, area, image_shapes)
+        for scores_per_image, boxes_per_image, image_shape in zip(scores, boxes, image_shapes)
     ]
     return [x[0] for x in result_per_image], [x[1] for x in result_per_image]
 
@@ -339,7 +339,7 @@ class FastRCNNOutputs:
         """
         boxes = self.predict_boxes()
         scores = self.predict_probs()
-        area = self.predict_area()
+        # area = self.predict_area()
         image_shapes = self.image_shapes
         return fast_rcnn_inference(
             boxes, scores, image_shapes, score_thresh, nms_thresh, topk_per_image
@@ -499,12 +499,11 @@ class MyFastRCNNOutputLayers(nn.Module):
         """
         boxes = self.predict_boxes(predictions, proposals)
         scores = self.predict_probs(predictions, proposals)
-        area = self.predict_areas(predictions, proposals)
+        # area = self.predict_areas(predictions, proposals)
         image_shapes = [x.image_size for x in proposals]
         return fast_rcnn_inference(
             boxes,
             scores,
-            area,
             image_shapes,
             self.test_score_thresh,
             self.test_nms_thresh,

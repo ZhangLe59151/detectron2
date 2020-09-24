@@ -21,8 +21,8 @@ from .box_head import build_box_head
 from .fast_rcnn import FastRCNNOutputLayers
 from .keypoint_head import build_keypoint_head
 from .mask_head import build_mask_head
+from .new_fc_rcnn import MyFastRCNNOutputLayers
 
-from .mask_rcnn_arealoss import AMaskRCNNOutputLayers
 import pdb, json
 
 ROI_HEADS_REGISTRY = Registry("ROI_HEADS")
@@ -592,7 +592,7 @@ class StandardROIHeads(ROIHeads):
             cfg, ShapeSpec(channels=in_channels, height=pooler_resolution, width=pooler_resolution)
         )
         # add debug
-        box_predictor = FastRCNNOutputLayers(cfg, box_head.output_shape)
+        box_predictor = MyFastRCNNOutputLayers(cfg, box_head.output_shape)
         return {
             "box_in_features": in_features,
             "box_pooler": box_pooler,
@@ -932,7 +932,7 @@ class MyAreaROIHeads(ROIHeads):
             cfg, ShapeSpec(channels=in_channels, height=pooler_resolution, width=pooler_resolution)
         )
         # add debug
-        box_predictor = AMaskRCNNOutputLayers(cfg, box_head.output_shape)
+        box_predictor = MyMaskRCNNOutputLayers(cfg, box_head.output_shape)
         return {
             "box_in_features": in_features,
             "box_pooler": box_pooler,
