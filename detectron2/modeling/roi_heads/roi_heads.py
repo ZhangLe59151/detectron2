@@ -1010,7 +1010,7 @@ class MyAreaROIHeads(ROIHeads):
         #del images
         if self.training:
             assert targets
-            proposals = self.label_and_sample_proposals(proposals)
+            proposals = self.label_and_sample_proposals(proposals, targets)
         del targets
 
         if self.training:
