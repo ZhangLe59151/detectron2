@@ -37,6 +37,7 @@ from .roi_heads import (
     ROI_MASK_HEAD_REGISTRY,
     ROIHeads,
     StandardROIHeads,
+    MyAreaROIHeads,
     BaseMaskRCNNHead,
     BaseKeypointRCNNHead,
     FastRCNNOutputLayers,
@@ -44,6 +45,7 @@ from .roi_heads import (
     build_keypoint_head,
     build_mask_head,
     build_roi_heads,
+    build_area_head,
 )
 from .test_time_augmentation import DatasetMapperTTA, GeneralizedRCNNWithTTA
 
