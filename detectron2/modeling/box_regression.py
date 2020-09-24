@@ -219,3 +219,12 @@ class Box2BoxTransformRotated(object):
         pred_boxes[:, 4::5] = pred_angle
 
         return pred_boxes
+    
+    def apply_areas(self, deltas, boxes):
+        assert deltas.shape[1] % 5 == 0 and boxes.shape[1] == 5
+        boxes = boxes.to(deltas.dtype).unsqueeze(2)
+        widths = boxes[:, 2]
+        heights = boxes[:, 3]
+        areas = widths * heights
+        return areas
+

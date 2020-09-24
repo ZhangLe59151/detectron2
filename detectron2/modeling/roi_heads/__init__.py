@@ -14,6 +14,6 @@ from .rotated_fast_rcnn import RROIHeads
 from .fast_rcnn import FastRCNNOutputLayers
 
 from . import cascade_rcnn  # isort:skip
-from .new_fc_rcnn import My_ROI_MASK_HEAD_REGISTRY, MyBaseMaskRCNNHead
+from .new_fc_rcnn import MyFastRCNNOutputLayers
 
 __all__ = list(globals().keys())
