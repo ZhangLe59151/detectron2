@@ -348,9 +348,9 @@ class MyFastRCNNOutputs:
                     for k in range(j+1, len(gt_group_by_id)):
                         gt_gk = gt_group_by_id[k].flatten()
                         losses.append(torch.sum(ops.boxes.box_iou(src_boxes[gt_gj], src_boxes[gt_gk])))
-        pdb.set_trace()
         except Exception as e:
             pdb.set_trace()
+        pdb.set_trace()
         if not losses:
             return 0.0 * self.pred_proposal_deltas.sum()
         return torch.sum(torch.stack(losses)) / self.gt_classes.numel()
