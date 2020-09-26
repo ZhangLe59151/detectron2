@@ -350,7 +350,6 @@ class MyFastRCNNOutputs:
                         losses.append(torch.sum(ops.boxes.box_iou(src_boxes[gt_gj], src_boxes[gt_gk])))
         except Exception as e:
             pdb.set_trace()
-        pdb.set_trace()
         if not losses:
             return 0.0 * self.pred_proposal_deltas.sum()
         return torch.sum(torch.stack(losses)) / self.gt_classes.numel()
