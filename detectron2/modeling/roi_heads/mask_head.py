@@ -255,7 +255,7 @@ class MaskRCNNConvUpsampleHead(BaseMaskRCNNHead):
         self.predictor = Conv2d(cur_channels, num_classes, kernel_size=1, stride=1, padding=0)
 
         if self.area_loss:
-            self.area_pred = Linear(input_shape.height * input_shape.width, 1)
+            self.area_pred = Linear(input_shape.height * input_shape.width * 2 * 2, 1)
 
         for layer in self.conv_norm_relus + [self.deconv]:
             weight_init.c2_msra_fill(layer)
@@ -308,7 +308,7 @@ class MaskRCNNConvUpsampleHead(BaseMaskRCNNHead):
                 mask_probs_pred = x.split(num_boxes_per_image, dim=0)
                 arr = []
                 for xs in mask_probs_pred:
-                    xs = torch.mean(xs, dim=1).flatten()
+                    xs = torch.mean(xs, dim=0).flatten()
                     arr.append(xs)
                 arr = torch.stack(arr)
                 area_ratio = self.area_pred(arr)
