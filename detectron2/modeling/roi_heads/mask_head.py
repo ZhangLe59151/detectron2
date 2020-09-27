@@ -279,7 +279,9 @@ class MaskRCNNConvUpsampleHead(BaseMaskRCNNHead):
         else:
             ret["num_classes"] = cfg.MODEL.ROI_HEADS.NUM_CLASSES
 
-        ret["area_loss"] = cfg.MODEL.ROI_MASK_HEAD.AREA_LOSS == "ON"
+        ret["area_loss"] = False
+        if "AREA_LOSS" in cfg.MODEL.ROI_MASK_HEAD:
+            ret["area_loss"] = cfg.MODEL.ROI_MASK_HEAD.AREA_LOSS == "ON"
         return ret
 
     def forward(self, x, instances: List[Instances]):
