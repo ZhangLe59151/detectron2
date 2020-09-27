@@ -278,6 +278,8 @@ class MaskRCNNConvUpsampleHead(BaseMaskRCNNHead):
 
         if self.area_loss:
             self.area_pred = Linear(input_shape.height * input_shape.width * 2 * 2, 1)
+            nn.init.normal_(self.bbox_pred.weight, std=0.001)
+            nn.init.constant_(self.bbox_pred.l.bias, 0)
 
         for layer in self.conv_norm_relus + [self.deconv]:
             weight_init.c2_msra_fill(layer)
