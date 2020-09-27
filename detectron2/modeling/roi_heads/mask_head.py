@@ -6,7 +6,7 @@ from torch import nn
 from torch.nn import functional as F
 
 from detectron2.config import configurable
-from detectron2.layers import Conv2d, ConvTranspose2d, ShapeSpec, cat, get_norm
+from detectron2.layers import Linear, Conv2d, ConvTranspose2d, ShapeSpec, cat, get_norm
 from detectron2.structures import Instances
 from detectron2.utils.events import get_event_storage
 from detectron2.utils.registry import Registry
@@ -151,6 +151,12 @@ def mask_rcnn_inference(pred_mask_logits, pred_instances):
         instances.pred_masks = prob  # (1, Hmask, Wmask)
 
 
+def mask_rcnn_inference(area_ratio, instances):
+    import pdb
+    pdb.set_trace()
+    for inst in instances:
+        pass
+
 class BaseMaskRCNNHead(nn.Module):
     """
     Implement the basic Mask R-CNN losses and inference logic described in :paper:`Mask R-CNN`
@@ -207,7 +213,7 @@ class MaskRCNNConvUpsampleHead(BaseMaskRCNNHead):
     """
 
     @configurable
-    def __init__(self, input_shape: ShapeSpec, *, num_classes, conv_dims, conv_norm="", **kwargs):
+    def __init__(self, input_shape: ShapeSpec, *, num_classes, conv_dims, conv_norm="", area_loss=False, **kwargs):
         """
         NOTE: this interface is experimental.
 
@@ -221,6 +227,7 @@ class MaskRCNNConvUpsampleHead(BaseMaskRCNNHead):
         """
         super().__init__(**kwargs)
         assert len(conv_dims) >= 1, "conv_dims have to be non-empty!"
+        self.area_loss = area_loss
 
         self.conv_norm_relus = []
 
@@ -247,6 +254,9 @@ class MaskRCNNConvUpsampleHead(BaseMaskRCNNHead):
 
         self.predictor = Conv2d(cur_channels, num_classes, kernel_size=1, stride=1, padding=0)
 
+        if self.area_loss:
+            self.area_pred = Linear(input_shape.height * input_shape.width, 1)
+
         for layer in self.conv_norm_relus + [self.deconv]:
             weight_init.c2_msra_fill(layer)
         # use normal distribution initialization for mask prediction layer
@@ -268,7 +278,41 @@ class MaskRCNNConvUpsampleHead(BaseMaskRCNNHead):
             ret["num_classes"] = 1
         else:
             ret["num_classes"] = cfg.MODEL.ROI_HEADS.NUM_CLASSES
+
+        ret["area_loss"] = cfg.MODEL.ROI_MASK_HEAD.AREA_LOSS == "ON"
         return ret
+
+    def forward(self, x, instances: List[Instances]):
+        """
+        Args:
+            x: input region feature(s) provided by :class:`ROIHeads`.
+            instances (list[Instances]): contains the boxes & labels corresponding
+                to the input features.
+                Exact format is up to its caller to decide.
+                Typically, this is the foreground instances in training, with
+                "proposal_boxes" field and other gt annotations.
+                In inference, it contains boxes that are already predicted.
+
+        Returns:
+            A dict of losses in training. The predicted "instances" in inference.
+        """
+        x = self.layers(x)
+        if self.training:
+            losses = {"loss_mask": mask_rcnn_loss(x, instances, self.vis_period)}
+            if self.area_loss:
+                num_boxes_per_image = [len(i) for i in instances]
+                mask_probs_pred = x.split(num_boxes_per_image, dim=0)
+                arr = []
+                for xs in mask_probs_pred:
+                    xs = torch.mean(xs, dim=1).flatten()
+                    arr.append(xs)
+                arr = torch.stack(arr)
+                area_ratio = self.area_pred(arr)
+                losses.update({"loss_area": area_rcnn_loss(area_ratio, instances)})
+            return losses
+        else:
+            mask_rcnn_inference(x, instances)
+            return instances
 
     def layers(self, x):
         for layer in self.conv_norm_relus:
