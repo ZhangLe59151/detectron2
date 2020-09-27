@@ -173,7 +173,7 @@ def area_rcnn_loss(area_ratio, instances):
     gt_area = torch.stack(gt_area)
 
     return smooth_l1_loss(
-                area,
+                area_ratio,
                 gt_area,
                 1.0,
                 reduction="sum",
