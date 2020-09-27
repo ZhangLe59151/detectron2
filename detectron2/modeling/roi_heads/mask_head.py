@@ -300,8 +300,10 @@ class MaskRCNNConvUpsampleHead(BaseMaskRCNNHead):
         """
         x = self.layers(x)
         if self.training:
-            losses = {"loss_mask": mask_rcnn_loss(x, instances, self.vis_period)}
+            losses = {}
             if self.area_loss:
+                import pdb
+                pdb.set_trace()
                 num_boxes_per_image = [len(i) for i in instances]
                 mask_probs_pred = x.split(num_boxes_per_image, dim=0)
                 arr = []
@@ -311,6 +313,7 @@ class MaskRCNNConvUpsampleHead(BaseMaskRCNNHead):
                 arr = torch.stack(arr)
                 area_ratio = self.area_pred(arr)
                 losses.update({"loss_area": area_rcnn_loss(area_ratio, instances)})
+            losses.update({"loss_mask": mask_rcnn_loss(x, instances, self.vis_period)})
             return losses
         else:
             mask_rcnn_inference(x, instances)
