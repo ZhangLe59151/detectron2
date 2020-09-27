@@ -1,5 +1,6 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
 from typing import List
+from fvcore.nn import smooth_l1_loss
 import fvcore.nn.weight_init as weight_init
 import torch
 from torch import nn
@@ -151,11 +152,34 @@ def mask_rcnn_inference(pred_mask_logits, pred_instances):
         instances.pred_masks = prob  # (1, Hmask, Wmask)
 
 
-def mask_rcnn_inference(area_ratio, instances):
+def area_rcnn_loss(area_ratio, instances):
     import pdb
     pdb.set_trace()
+    gt_area = []
     for inst in instances:
-        pass
+        gt_boxes = []
+        inst_boxes = inst.gt_boxes.tensor
+        gt_sampled_targets = inst.sampled_targets
+        gt_id = gt_sampled_targets.unique()
+        gt_sampled_targets = gt_sampled_targets.view(-1, 1)
+        gt_group_by_id = gt_sampled_targets == gt_id
+        gt_group_by_id = gt_group_by_id.split(1, dim=1)
+        for j in range(len(gt_group_by_id)):
+            gt_gj = gt_group_by_id[j].flatten()
+            gt_boxes.append(inst_boxes[gt_gj][0])
+        gt_boxes = torch.stack(gt_boxes)
+        width = gt_boxes[:, 2] - gt_boxes[:, 0]
+        height = gt_boxes[:, 3] - gt_boxes[:, 1]
+        area = width * height / (inst.image_size[0] * inst.image_size[1])
+        gt_area.append(torch.sum(area))
+    gt_area = toch.stack(gt_area)
+
+    return smooth_l1_loss(
+                area,
+                gt_area,
+                1.0,
+                reduction="sum",
+            )
 
 class BaseMaskRCNNHead(nn.Module):
     """
