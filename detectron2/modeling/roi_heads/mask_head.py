@@ -153,8 +153,6 @@ def mask_rcnn_inference(pred_mask_logits, pred_instances):
 
 
 def area_rcnn_loss(area_ratio, instances):
-    import pdb
-    pdb.set_trace()
     gt_area = []
     for inst in instances:
         gt_boxes = []
@@ -172,7 +170,7 @@ def area_rcnn_loss(area_ratio, instances):
         height = gt_boxes[:, 3] - gt_boxes[:, 1]
         area = width * height / (inst.image_size[0] * inst.image_size[1])
         gt_area.append(torch.sum(area))
-    gt_area = toch.stack(gt_area)
+    gt_area = torch.stack(gt_area)
 
     return smooth_l1_loss(
                 area,
@@ -326,8 +324,6 @@ class MaskRCNNConvUpsampleHead(BaseMaskRCNNHead):
         if self.training:
             losses = {}
             if self.area_loss:
-                import pdb
-                pdb.set_trace()
                 num_boxes_per_image = [len(i) for i in instances]
                 mask_probs_pred = x.split(num_boxes_per_image, dim=0)
                 arr = []
